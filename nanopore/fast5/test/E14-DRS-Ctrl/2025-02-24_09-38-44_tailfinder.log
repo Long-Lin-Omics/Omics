@@ -1,0 +1,72 @@
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+── Started tailfindr (version 1.4) ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+☰ You have configured tailfindr as following:
+❯ fast5_dir:         ~/bin/scripts/fast5/test/E14-DRS-Ctrl
+❯ save_dir:          ~/bin/scripts/fast5/test/E14-DRS-Ctrl
+❯ csv_filename:      cdna_tails.csv
+❯ num_cores:         4
+❯ basecall_group:    Basecall_1D_000
+❯ save_plots:        TRUE
+❯ plot_debug_traces: TRUE
+❯ plotting_library:  rbokeh
+── Processing started at 2025-02-24 09:38:44.940426 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+• Searching for all Fast5 files...
+  Done! Found 2 Fast5 files.
+• Analyzing a single Fast5 file to assess if your data 
+  is in an acceptable format...
+  ✔ The data has been basecalled using Guppy.
+  ✔ Flipflop model was used during basecalling.
+  ✔ Every read is in a single fast5 file of its own.
+  ✔ The experiment type is RNA, so we will search
+    for poly(A) tails.
+  ✔ The reads are 1D reads.
+• Starting a parallel compute cluster...
+  Done!
+[1] FALSE
+• Searching for Poly(A) tails...
+[1] 1
+[1] "/ddn/gs1/home/linl7/bin/scripts/fast5/test/E14-DRS-Ctrl/52a32c35-9697-4ce7-980c-fcea63f71d30.fast5" "/ddn/gs1/home/linl7/bin/scripts/fast5/test/E14-DRS-Ctrl/bcbda288-0ebe-405d-883c-83f48cddaea1.fast5"
+[1] "/ddn/gs1/home/linl7/bin/scripts/fast5/test/E14-DRS-Ctrl/bcbda288-0ebe-405d-883c-83f48cddaea1.fast5"
+  Processing chunk 1 of 1
+$getVal
+function () 
+.val
+<bytecode: 0x63c3280>
+<environment: 0x6380a58>
+
+$up
+function (value) 
+{
+    if (!is.finite(value) || value < min || value > max) 
+        return()
+    .val <<- value
+    nb <- round(width * (value - min)/(max - min))
+    pc <- round(100 * (value - min)/(max - min))
+    if (nb == .nb && pc == .pc) 
+        return()
+    cat(paste0("\r  |", strrep(" ", nw * width + 6)), file = file)
+    cat(paste(c("\r  |", rep.int(char, nb), rep.int(" ", nw * 
+        (width - nb)), sprintf("| %3d%%", pc)), collapse = ""), 
+        file = file)
+    flush.console()
+    .nb <<- nb
+    .pc <<- pc
+}
+<bytecode: 0x63c4db0>
+<environment: 0x6380a58>
+
+$kill
+function () 
+if (!.killed) {
+    cat("\n", file = file)
+    flush.console()
+    .killed <<- TRUE
+}
+<bytecode: 0x63c33d0>
+<environment: 0x6380a58>
+
+attr(,"class")
+[1] "txtProgressBar"
+  Processing chunk 1 of 1
+  |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |   0%

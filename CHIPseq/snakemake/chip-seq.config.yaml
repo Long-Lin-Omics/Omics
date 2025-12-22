@@ -1,0 +1,82 @@
+identifier: "GSE231845"
+output_dir: "./GSE231845"  
+
+cases:
+  H3K9me3.rep1-1:
+    fastq1: "./GSE231845/data/SRR24458242_1.fastq.gz"
+    fastq2: "./GSE231845/data/SRR24458242_2.fastq.gz"
+    control: "Input_for_H3K9me3.rep1-1"
+  H3K9me3.rep1-2:
+    fastq1: "./GSE231845/data/SRR24458243_1.fastq.gz"
+    fastq2: "./GSE231845/data/SRR24458243_2.fastq.gz"
+    control: "Input_for_H3K9me3.rep1-2"
+  H3K9me3.rep1-3:
+    fastq1: "./GSE231845/data/SRR24458244_1.fastq.gz"
+    fastq2: "./GSE231845/data/SRR24458244_2.fastq.gz"
+    control: "Input_for_H3K9me3.rep1-3"
+  H3K9me3.rep2-1:
+    fastq1: "./GSE231845/data/SRR24458245_1.fastq.gz"
+    fastq2: "./GSE231845/data/SRR24458245_2.fastq.gz"
+    control: "Input_for_H3K9me3.rep2-1"
+  H3K9me3.rep2-2:
+    fastq1: "./GSE231845/data/SRR24458246_1.fastq.gz"
+    fastq2: "./GSE231845/data/SRR24458246_2.fastq.gz"
+    control: "Input_for_H3K9me3.rep2-2"
+  H3K9me3.rep2-3:
+    fastq1: "./GSE231845/data/SRR24458247_1.fastq.gz"
+    fastq2: "./GSE231845/data/SRR24458247_2.fastq.gz"
+    control: "Input_for_H3K9me3.rep2-3"
+  H3K9me3.rep3-1:
+    fastq1: "./GSE231845/data/SRR24458248_1.fastq.gz"
+    fastq2: "./GSE231845/data/SRR24458248_2.fastq.gz"
+    control: "Input_for_H3K9me3.rep3-1"
+  H3K9me3.rep3-2:
+    fastq1: "./GSE231845/data/SRR24458249_1.fastq.gz"
+    fastq2: "./GSE231845/data/SRR24458249_2.fastq.gz"
+    control: "Input_for_H3K9me3.rep3-2"
+  H3K9me3.rep3-3:
+    fastq1: "./GSE231845/data/SRR24458241_1.fastq.gz"
+    fastq2: "./GSE231845/data/SRR24458241_2.fastq.gz"
+    control: "Input_for_H3K9me3.rep3-3"
+
+controls:
+  Input_for_H3K9me3.rep1-1:
+    fastq1: "./GSE231845/data/SRR24458366_1.fastq.gz"
+    fastq2: "./GSE231845/data/SRR24458366_2.fastq.gz"
+  Input_for_H3K9me3.rep1-2:
+    fastq1: "./GSE231845/data/SRR24458367_1.fastq.gz"
+    fastq2: "./GSE231845/data/SRR24458367_2.fastq.gz"
+  Input_for_H3K9me3.rep1-3:
+    fastq1: "./GSE231845/data/SRR24458368_1.fastq.gz"
+    fastq2: "./GSE231845/data/SRR24458368_2.fastq.gz"
+  Input_for_H3K9me3.rep2-1:
+    fastq1: "./GSE231845/data/SRR24458369_1.fastq.gz"
+    fastq2: "./GSE231845/data/SRR24458369_2.fastq.gz"
+  Input_for_H3K9me3.rep2-2:
+    fastq1: "./GSE231845/data/SRR24458370_1.fastq.gz"
+    fastq2: "./GSE231845/data/SRR24458370_2.fastq.gz"
+  Input_for_H3K9me3.rep2-3:
+    fastq1: "./GSE231845/data/SRR24458371_1.fastq.gz"
+    fastq2: "./GSE231845/data/SRR24458371_2.fastq.gz"
+  Input_for_H3K9me3.rep3-1:
+    fastq1: "./GSE231845/data/SRR24458225_1.fastq.gz"
+    fastq2: "./GSE231845/data/SRR24458225_2.fastq.gz"
+  Input_for_H3K9me3.rep3-2:
+    fastq1: "./GSE231845/data/SRR24458226_1.fastq.gz"
+    fastq2: "./GSE231845/data/SRR24458226_2.fastq.gz"
+  Input_for_H3K9me3.rep3-3:
+    fastq1: "./GSE231845/data/SRR24458227_1.fastq.gz"
+    fastq2: "./GSE231845/data/SRR24458227_2.fastq.gz"
+
+comparisons:
+  H3K9me3_each: ["H3K9me3.rep1-1", "H3K9me3.rep1-2","H3K9me3.rep1-3", "H3K9me3.rep2-1", "H3K9me3.rep2-2", "H3K9me3.rep2-3", "H3K9me3.rep3-1", "H3K9me3.rep3-2", "H3K9me3.rep3-3"] 
+
+genome: "/commons/data/reference/genome_index/mm10/mm10.fa"  # Reference genome
+fai: "/project/nextgen/post/hug4/LongLin/rnaseq/reference/mm10.fa.fai"
+bowtie2_index: "/commons/data/reference/genome_index/mm10/mm10"  # Prefix of Bowtie2 index
+macs2_genome_size: "mm"  # Genome size for MACS2 (e.g., "mm" for mouse, "hs" for human)
+ref_to_annotate: "mm10"
+blacklist: "/project/nextgen/post/hug4/LongLin/rnaseq/reference/ENCFF547MET.bed"
+regions_bed: "./NOV0695/regions_of_interest.bed"  # Regions for signal comparison
+rule_threads_n: 8
+scripts_folder: '/home/linl7/bin/scripts'

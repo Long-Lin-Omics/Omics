@@ -1,0 +1,31 @@
+#rename fastq.gz files
+include: "/ddn/gs1/home/linl7/bin/scripts/chip-seq/rules/ln_fastqs_to_input.smk"
+
+#input
+include: "/ddn/gs1/home/linl7/bin/scripts/chip-seq/rules/input_fastqc.smk"
+include: "/ddn/gs1/home/linl7/bin/scripts/chip-seq/rules/input_multiqc.smk"
+include: "/ddn/gs1/home/linl7/bin/scripts/chip-seq/rules/input_reads_count.smk"
+
+#trimmed 
+include: "/ddn/gs1/home/linl7/bin/scripts/chip-seq/rules/input_cutadapt_to_trimmed.smk"
+include: "/ddn/gs1/home/linl7/bin/scripts/chip-seq/rules/trimmed_fastqc.smk"
+include: "/ddn/gs1/home/linl7/bin/scripts/chip-seq/rules/trimmed_multiqc.smk"
+include: "/ddn/gs1/home/linl7/bin/scripts/chip-seq/rules/trimmed_reads_count.smk"
+
+#align
+include: "/ddn/gs1/home/linl7/bin/scripts/chip-seq/rules/trimmed_bowtie2_to_aligned.smk"
+include: "/ddn/gs1/home/linl7/bin/scripts/chip-seq/rules/aligned_markduplicate.smk"
+include: "/ddn/gs1/home/linl7/bin/scripts/chip-seq/rules/aligned_dedup_bam_plot_fragment.smk"
+include: "/ddn/gs1/home/linl7/bin/scripts/chip-seq/rules/aligned_dedup_bam_2bigwig.smk"
+
+#peaks
+include: "/ddn/gs1/home/linl7/bin/scripts/chip-seq/rules/aligned_dedup_bam_macs_with_control_to_peaks.smk"
+include: "/ddn/gs1/home/linl7/bin/scripts/chip-seq/rules/peaks_annotate_and_clean.smk"
+include: "/ddn/gs1/home/linl7/bin/scripts/chip-seq/rules/peaks_clean_peaks_2bed.smk"
+
+#
+include: "/ddn/gs1/home/linl7/bin/scripts/chip-seq/rules/stats_from_fqs_trim_dup_peaks.smk"
+include: "/ddn/gs1/home/linl7/bin/scripts/chip-seq/rules/ucsc_hub_from_bw_bb.smk"
+include: "/ddn/gs1/home/linl7/bin/scripts/chip-seq/rules/comparison_metaplot.smk"
+include: "/ddn/gs1/home/linl7/bin/scripts/chip-seq/rules/comparison_metaplot_interested_regions.smk"
+

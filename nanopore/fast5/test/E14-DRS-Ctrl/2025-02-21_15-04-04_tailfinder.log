@@ -1,0 +1,173 @@
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+── Started tailfindr (version 1.4) ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+☰ You have configured tailfindr as following:
+❯ fast5_dir:         ~/bin/scripts/fast5/test/E14-DRS-Ctrl
+❯ save_dir:          ~/bin/scripts/fast5/test/E14-DRS-Ctrl
+❯ csv_filename:      cdna_tails.csv
+❯ num_cores:         4
+❯ basecall_group:    Basecall_1D_000
+❯ save_plots:        TRUE
+❯ plot_debug_traces: TRUE
+❯ plotting_library:  rbokeh
+── Processing started at 2025-02-21 15:04:04.724675 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+• Searching for all Fast5 files...
+  Done! Found 2 Fast5 files.
+• Analyzing a single Fast5 file to assess if your data 
+  is in an acceptable format...
+  ✔ The data has been basecalled using Guppy.
+  ✔ Flipflop model was used during basecalling.
+  ✔ Every read is in a single fast5 file of its own.
+  ✔ The experiment type is RNA, so we will search
+    for poly(A) tails.
+  ✔ The reads are 1D reads.
+• Starting a parallel compute cluster...
+  Done!
+[1] FALSE
+$basecalled_with
+[1] "guppy"
+
+$read_is_1d
+[1] TRUE
+
+$model
+[1] "flipflop"
+
+$fast5type
+[1] "single"
+
+$experiment_type
+[1] "rna"
+
+[1] FALSE
+• Searching for Poly(A) tails...
+[1] 2
+[1] 1
+[1] 1
+  Processing chunk 1 of 1
+# A tibble: 2 × 8
+  chunk read_id                              tail_start tail_end samples_per_nt tail_length polya_fastq file_path                                                                                         
+  <chr> <chr>                                     <dbl>    <dbl>          <dbl>       <dbl> <lgl>       <chr>                                                                                             
+1 1     52a32c35-9697-4ce7-980c-fcea63f71d30         NA       NA           26.5        NA   NA          /ddn/gs1/home/linl7/bin/scripts/fast5/test/E14-DRS-Ctrl/52a32c35-9697-4ce7-980c-fcea63f71d30.fast5
+2 1     bcbda288-0ebe-405d-883c-83f48cddaea1       9341     9966           40.4        10.5 NA          /ddn/gs1/home/linl7/bin/scripts/fast5/test/E14-DRS-Ctrl/bcbda288-0ebe-405d-883c-83f48cddaea1.fast5
+[1] "1" "1"
+$read_id
+[1] "52a32c35-9697-4ce7-980c-fcea63f71d30"
+
+$tail_start
+[1] NA
+
+$tail_end
+[1] NA
+
+$samples_per_nt
+[1] 26.47496
+
+$tail_length
+[1] NA
+
+$polya_fastq
+[1] NA
+
+$file_path
+[1] "/ddn/gs1/home/linl7/bin/scripts/fast5/test/E14-DRS-Ctrl/52a32c35-9697-4ce7-980c-fcea63f71d30.fast5"
+
+$read_id
+[1] "bcbda288-0ebe-405d-883c-83f48cddaea1"
+
+$tail_start
+[1] 9341
+
+$tail_end
+[1] 9966
+
+$samples_per_nt
+[1] 40.38903
+
+$tail_length
+[1] 10.4745
+
+$polya_fastq
+[1] NA
+
+$file_path
+[1] "/ddn/gs1/home/linl7/bin/scripts/fast5/test/E14-DRS-Ctrl/bcbda288-0ebe-405d-883c-83f48cddaea1.fast5"
+
+# A tibble: 2 × 8
+  chunk read_id                              tail_start tail_end samples_per_nt tail_length polya_fastq file_path                                                                                         
+  <chr> <chr>                                     <dbl>    <dbl>          <dbl>       <dbl> <lgl>       <chr>                                                                                             
+1 1     52a32c35-9697-4ce7-980c-fcea63f71d30         NA       NA           26.5        NA   NA          /ddn/gs1/home/linl7/bin/scripts/fast5/test/E14-DRS-Ctrl/52a32c35-9697-4ce7-980c-fcea63f71d30.fast5
+2 1     bcbda288-0ebe-405d-883c-83f48cddaea1       9341     9966           40.4        10.5 NA          /ddn/gs1/home/linl7/bin/scripts/fast5/test/E14-DRS-Ctrl/bcbda288-0ebe-405d-883c-83f48cddaea1.fast5
+  |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |   0%  |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |======================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================| 100%         read_id                                tail_start tail_end samples_per_nt tail_length polya_fastq file_path                                                                                           
+result.1 "52a32c35-9697-4ce7-980c-fcea63f71d30" NA         NA       26.47496       NA          NA          "/ddn/gs1/home/linl7/bin/scripts/fast5/test/E14-DRS-Ctrl/52a32c35-9697-4ce7-980c-fcea63f71d30.fast5"
+result.2 "bcbda288-0ebe-405d-883c-83f48cddaea1" 9341       9966     40.38903       10.4745     NA          "/ddn/gs1/home/linl7/bin/scripts/fast5/test/E14-DRS-Ctrl/bcbda288-0ebe-405d-883c-83f48cddaea1.fast5"
+[[1]]
+         read_id                                tail_start tail_end samples_per_nt tail_length polya_fastq file_path                                                                                           
+result.1 "52a32c35-9697-4ce7-980c-fcea63f71d30" NA         NA       26.47496       NA          NA          "/ddn/gs1/home/linl7/bin/scripts/fast5/test/E14-DRS-Ctrl/52a32c35-9697-4ce7-980c-fcea63f71d30.fast5"
+result.2 "bcbda288-0ebe-405d-883c-83f48cddaea1" 9341       9966     40.38903       10.4745     NA          "/ddn/gs1/home/linl7/bin/scripts/fast5/test/E14-DRS-Ctrl/bcbda288-0ebe-405d-883c-83f48cddaea1.fast5"
+
+         read_id                                tail_start tail_end samples_per_nt tail_length polya_fastq file_path                                                                                           
+result.1 "52a32c35-9697-4ce7-980c-fcea63f71d30" NA         NA       26.47496       NA          NA          "/ddn/gs1/home/linl7/bin/scripts/fast5/test/E14-DRS-Ctrl/52a32c35-9697-4ce7-980c-fcea63f71d30.fast5"
+result.2 "bcbda288-0ebe-405d-883c-83f48cddaea1" 9341       9966     40.38903       10.4745     NA          "/ddn/gs1/home/linl7/bin/scripts/fast5/test/E14-DRS-Ctrl/bcbda288-0ebe-405d-883c-83f48cddaea1.fast5"
+[1] TRUE
+$read_id
+[1] "52a32c35-9697-4ce7-980c-fcea63f71d30"
+
+$tail_start
+[1] NA
+
+$tail_end
+[1] NA
+
+$samples_per_nt
+[1] 26.47496
+
+$tail_length
+[1] NA
+
+$polya_fastq
+[1] NA
+
+$file_path
+[1] "/ddn/gs1/home/linl7/bin/scripts/fast5/test/E14-DRS-Ctrl/52a32c35-9697-4ce7-980c-fcea63f71d30.fast5"
+
+[1] "52a32c35-9697-4ce7-980c-fcea63f71d30"
+[[1]]
+[[1]]$read_id
+[1] "52a32c35-9697-4ce7-980c-fcea63f71d30"
+
+[[1]]$tail_start
+[1] NA
+
+[[1]]$tail_end
+[1] NA
+
+[[1]]$samples_per_nt
+[1] 26.47496
+
+[[1]]$tail_length
+[1] NA
+
+[[1]]$polya_fastq
+[1] NA
+
+[[1]]$file_path
+[1] "/ddn/gs1/home/linl7/bin/scripts/fast5/test/E14-DRS-Ctrl/52a32c35-9697-4ce7-980c-fcea63f71d30.fast5"
+
+
+# A tibble: 1 × 7
+  read_id                              tail_start tail_end samples_per_nt tail_length polya_fastq file_path                                                                                         
+  <chr>                                <lgl>      <lgl>             <dbl> <lgl>       <lgl>       <chr>                                                                                             
+1 52a32c35-9697-4ce7-980c-fcea63f71d30 NA         NA                 26.5 NA          NA          /ddn/gs1/home/linl7/bin/scripts/fast5/test/E14-DRS-Ctrl/52a32c35-9697-4ce7-980c-fcea63f71d30.fast5
+  |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |   0%  |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |======================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================| 100%
+• Formatting the tail data...
+# A tibble: 2 × 7
+  read_id                              tail_start tail_end samples_per_nt tail_length polya_fastq file_path                                                                                         
+  <chr>                                     <dbl>    <dbl>          <dbl>       <dbl> <lgl>       <chr>                                                                                             
+1 52a32c35-9697-4ce7-980c-fcea63f71d30         NA       NA           26.5        NA   NA          /ddn/gs1/home/linl7/bin/scripts/fast5/test/E14-DRS-Ctrl/52a32c35-9697-4ce7-980c-fcea63f71d30.fast5
+2 bcbda288-0ebe-405d-883c-83f48cddaea1       9341     9966           40.4        10.5 NA          /ddn/gs1/home/linl7/bin/scripts/fast5/test/E14-DRS-Ctrl/bcbda288-0ebe-405d-883c-83f48cddaea1.fast5
+[1] "/ddn/gs1/home/linl7/bin/scripts/fast5/test/E14-DRS-Ctrl/52a32c35-9697-4ce7-980c-fcea63f71d30.fast5" "/ddn/gs1/home/linl7/bin/scripts/fast5/test/E14-DRS-Ctrl/bcbda288-0ebe-405d-883c-83f48cddaea1.fast5"
+[1] 1 2 3 4 5
+[1] 4
+[1] 1 3 4 4 5
+

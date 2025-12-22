@@ -1,0 +1,42 @@
+identifier: "DPPA4_H3k4me3"
+output_dir: "./H3k4me3"  
+
+cases:
+  H3K4me3_Dppa4Inomin-rep-1:
+    fastq1: "./raw_data/NS20221.h3k4Dppa4InominOHTR1_20250929_120806.L001.1.fastq.gz"
+    fastq2: "./raw_data/NS20221.h3k4Dppa4InominOHTR1_20250929_120806.L001.2.fastq.gz"
+  H3K4me3_Ino80pos-rep-1:
+    fastq1: "./raw_data/NS20221.h3k4Ino80posOHTR2_20250929_120806.L001.1.fastq.gz"
+    fastq2: "./raw_data/NS20221.h3k4Ino80posOHTR2_20250929_120806.L001.2.fastq.gz"
+  H3K4me3_Dppa4Inopos-rep-1:
+    fastq1: "./raw_data/NS20221.h3k4Dppa4InoposOHTR1_20250929_120806.L001.1.fastq.gz"
+    fastq2: "./raw_data/NS20221.h3k4Dppa4InoposOHTR1_20250929_120806.L001.2.fastq.gz"
+  H3K4me3_Ino80pos-rep-2:
+    fastq1: "./raw_data/NS20221.h3k4Ino80posOHTR1_20250929_120806.L001.1.fastq.gz"
+    fastq2: "./raw_data/NS20221.h3k4Ino80posOHTR1_20250929_120806.L001.2.fastq.gz"
+  H3K4me3_Dppa4Inomin-rep-2:
+    fastq1: "./raw_data/NS20221.h3k4Dppa4InominOHTR2_20250929_120806.L001.1.fastq.gz"
+    fastq2: "./raw_data/NS20221.h3k4Dppa4InominOHTR2_20250929_120806.L001.2.fastq.gz"
+  H3K4me3_Dppa4Inopos-rep-2:
+    fastq1: "./raw_data/NS20221.h3k4Dppa4InoposOHTR2_20250929_120806.L001.1.fastq.gz"
+    fastq2: "./raw_data/NS20221.h3k4Dppa4InoposOHTR2_20250929_120806.L001.2.fastq.gz"
+  H3K4me3_Ino80min-rep-1:
+    fastq1: "./raw_data/NS20221.h3k4Ino80minOHTR2_20250929_120806.L001.1.fastq.gz"
+    fastq2: "./raw_data/NS20221.h3k4Ino80minOHTR2_20250929_120806.L001.2.fastq.gz"
+  H3K4me3_Ino80min-rep-2:
+    fastq1: "./raw_data/NS20221.h3k4Ino80minOHTR1_20250929_120806.L001.1.fastq.gz"
+    fastq2: "./raw_data/NS20221.h3k4Ino80minOHTR1_20250929_120806.L001.2.fastq.gz"
+
+comparisons:
+  Ino80pos_vs_Ino80min: ["H3K4me3_Ino80min-rep-1", "H3K4me3_Ino80min-rep-2", "H3K4me3_Ino80pos-rep-1", "H3K4me3_Ino80pos-rep-2"] 
+  Dppa4Inomin_vs_Ino80min: ["H3K4me3_Ino80min-rep-1", "H3K4me3_Ino80min-rep-2", "H3K4me3_Dppa4Inomin-rep-1", "H3K4me3_Dppa4Inomin-rep-2"]
+  Dppa4Inopos_vs_Ino80min: ["H3K4me3_Ino80min-rep-1", "H3K4me3_Ino80min-rep-2", "H3K4me3_Dppa4Inopos-rep-1", "H3K4me3_Dppa4Inopos-rep-2"]
+  all: ["H3K4me3_Ino80min-rep-1", "H3K4me3_Ino80min-rep-2", "H3K4me3_Ino80pos-rep-1", "H3K4me3_Ino80pos-rep-2",  "H3K4me3_Dppa4Inomin-rep-1", "H3K4me3_Dppa4Inomin-rep-2", "H3K4me3_Dppa4Inopos-rep-1", "H3K4me3_Dppa4Inopos-rep-2"]
+genome: "/commons/data/reference/genome_index/mm10/mm10.fa"  # Reference genome
+fai: "/project/nextgen/post/hug4/LongLin/rnaseq/reference/mm10.fa.fai"
+bowtie2_index: "/commons/data/reference/genome_index/mm10/mm10"  # Prefix of Bowtie2 index
+ecoli_bowtie2_index: "/project/nextgen/post/hug4/LongLin/rnaseq/reference/Ecoli/Escherichia_coli_K_12_MG1655/NCBI/2001-10-15/Sequence/Bowtie2Index/genome"
+macs2_genome_size: "mm"  # Genome size for MACS2 (e.g., "mm" for mouse, "hs" for human)
+ref_to_annotate: "mm10"
+blacklist: "/project/nextgen/post/hug4/LongLin/rnaseq/reference/ENCFF547MET.bed"
+scripts_folder: '/home/linl7/bin/scripts'

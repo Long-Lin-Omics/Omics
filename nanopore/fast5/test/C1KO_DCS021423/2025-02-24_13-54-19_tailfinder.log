@@ -1,0 +1,40 @@
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+── Started tailfindr (version 1.4) ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+☰ You have configured tailfindr as following:
+❯ fast5_dir:         ./
+❯ save_dir:          ./
+❯ csv_filename:      cdna_tails.csv
+❯ num_cores:         4
+❯ basecall_group:    Basecall_1D_000
+❯ save_plots:        TRUE
+❯ plot_debug_traces: FALSE
+❯ plotting_library:  rbokeh
+── Processing started at 2025-02-24 13:54:19.704826 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+• Creating a sub-directory to save the plots in.
+  Done! All plots will be saved in the following direcotry:
+  .//plots
+• Searching for all Fast5 files...
+  Done! Found 2 Fast5 files.
+• Analyzing a single Fast5 file to assess if your data 
+  is in an acceptable format...
+  ✔ The data has been basecalled using Guppy.
+  ✔ Standard model was used during basecalling.
+  ✔ Every read is in a single fast5 file of its own.
+  ✔ The experiment type is DNA, so we will search
+    for both poly(A) and poly(T) tails.
+  ✔ The reads are 1D reads.
+• Starting a parallel compute cluster...
+  Done!
+• Searching for Poly(A) and Poly(T) tails...
+  Processing chunk 1 of 1
+• Formatting the tail data...
+  Done!
+• Saving the data in the CSV file...
+  Done! Below is the path of the CSV file:
+  .//cdna_tails.csv
+• A logfile containing all this information has been saved in this path: 
+  .//2025-02-24_13-54-19_tailfinder.log
+── Processing ended at 2025-02-24 13:54:26.157377 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+✔ tailfindr finished successfully!
+

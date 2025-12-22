@@ -1,0 +1,41 @@
+
+
+Chip-seq:
+	snakemake adopted from brian? 
+		Bowtie2 --local 
+		Picard MarkDuplicates REMOVE_DUPLICATES=true
+		bigwig: --normalizeUsing BPM
+
+Rnaseq:
+	bash adopted from https://github.com/CebolaLab/RNA-seq
+		STAR
+		# not remove duplicates unless using UMIs
+		bigwig: --normalizeUsing BPM
+		bigwig: --scaleFactor
+
+CutandRun:
+	snakemake adopted from https://www.nature.com/articles/s41588-024-01706-w
+		Bowtie2	 -I 50 -X 800 --fr -N 0 -L 22 -i 'S,1,1.15' --n-ceil 'L,0,0.15' --dpad 15 --gbar 4 --end-to-end --score-min 'L,-0.6,-0.6'
+		no MarkDuplicates
+		bigwig: --normalizeUsing BPM
+
+
+CutandTag:
+	snakemake
+		Bowtie2  parameters adapted from https://yezhengstat.github.io/CUTTag_tutorial/, but change end-to-end to local， --very-sensitive --no-mixed --no-discordant --phred33 -I 10 -X 700
+		Picard MarkDuplicates REMOVE_DUPLICATES=true
+		bigwig:  --scaleFactor
+
+
+
+
+multiple alignment?
+
+	STAR 
+
+	duplicates
+
+
+
+
+Nanopore

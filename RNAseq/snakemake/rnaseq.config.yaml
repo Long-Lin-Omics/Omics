@@ -1,0 +1,27 @@
+identifier: "rnaseq_something"
+output_dir: "./"  
+
+spike_in: false
+
+cases:
+  H3K4me3_Ino80pos-rep-1:
+    fastq1: "./raw_data/NS20221.h3k4Ino80posOHTR2_20250929_120806.L001.1.fastq.gz"
+  H3K4me3_Ino80pos-rep-2:
+    fastq1: "./raw_data/NS20221.h3k4Ino80posOHTR1_20250929_120806.L001.1.fastq.gz"
+  H3K4me3_Ino80min-rep-1:
+    fastq1: "./raw_data/NS20221.h3k4Ino80minOHTR2_20250929_120806.L001.1.fastq.gz"
+  H3K4me3_Ino80min-rep-2:
+    fastq1: "./raw_data/NS20221.h3k4Ino80minOHTR1_20250929_120806.L001.1.fastq.gz"
+
+comparisons:
+  Ino80pos_vs_Ino80min: ["H3K4me3_Ino80min-rep-1", "H3K4me3_Ino80min-rep-2", "H3K4me3_Ino80pos-rep-1", "H3K4me3_Ino80pos-rep-2"] 
+
+
+genome: "/project/nextgen/post/hug4/LongLin/rnaseq/reference/ERCC92_Spike_In/STAR_mm10_75bp_ucsc/"  # Reference genome
+gtf: "/project/nextgen/post/hug4/LongLin/rnaseq/reference/ERCC92_Spike_In/mm10_plus_Ercc.gtf"
+bit: "/project/nextgen/post/hug4/LongLin/rnaseq/reference/ERCC92_Spike_In/mm10_plus_Ercc.2bit"
+transcriptome: "/project/nextgen/post/hug4/LongLin/rnaseq/reference/ERCC92_Spike_In/mm10_plus_Ercc.transcripts.fa"
+tx2gene: "/project/nextgen/post/hug4/LongLin/rnaseq/reference/ERCC92_Spike_In/tx2gene.tsv"
+fragment_length: 300
+effectGenomeSize: 2652866255
+scripts_folder: '/home/linl7/bin/scripts'

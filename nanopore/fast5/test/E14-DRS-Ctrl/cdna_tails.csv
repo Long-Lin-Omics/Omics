@@ -1,0 +1,3 @@
+read_id,tail_start,tail_end,samples_per_nt,tail_length,file_path
+52a32c35-9697-4ce7-980c-fcea63f71d30,,,26.47,,.//52a32c35-9697-4ce7-980c-fcea63f71d30.fast5
+bcbda288-0ebe-405d-883c-83f48cddaea1,9341,9966,40.39,10.47,.//bcbda288-0ebe-405d-883c-83f48cddaea1.fast5

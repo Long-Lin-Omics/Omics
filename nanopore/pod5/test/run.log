@@ -1,0 +1,2 @@
+pod5 filter /ddn/gs1/project/nextgen/niehsinbox/gridion/Hu_Lab/092324_WT_KO_DCS_Sue/092324_WT_KO_DCS_Sue/20240923_2048_X2_FBA20976_dc28ba79/pod5/FBA20976_dc28ba79_90e82e82_16.pod5 --output extracted.pod5 --ids extract.read_ids.txt
+pod5 convert to_fast5 extracted.pod5 --output ./

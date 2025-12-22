@@ -1,0 +1,29 @@
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+── Started tailfindr (version 1.4) ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+☰ You have configured tailfindr as following:
+❯ fast5_dir:         ~/bin/scripts/fast5/test/E14-DRS-Ctrl
+❯ save_dir:          ~/bin/scripts/fast5/test/E14-DRS-Ctrl
+❯ csv_filename:      cdna_tails.csv
+❯ num_cores:         4
+❯ basecall_group:    Basecall_1D_000
+❯ save_plots:        TRUE
+❯ plot_debug_traces: TRUE
+❯ plotting_library:  rbokeh
+── Processing started at 2025-02-24 10:04:15.10723 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+• Searching for all Fast5 files...
+  Done! Found 2 Fast5 files.
+• Analyzing a single Fast5 file to assess if your data 
+  is in an acceptable format...
+  ✔ The data has been basecalled using Guppy.
+  ✔ Flipflop model was used during basecalling.
+  ✔ Every read is in a single fast5 file of its own.
+  ✔ The experiment type is RNA, so we will search
+    for poly(A) tails.
+  ✔ The reads are 1D reads.
+• Starting a parallel compute cluster...
+  Done!
+[1] FALSE
+• Searching for Poly(A) tails...
+  Processing chunk 1 of 1
+  |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |   0%
