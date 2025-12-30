@@ -117,10 +117,10 @@ rule STAR:
         " --outFilterMismatchNoverReadLmax 0.04 --alignIntronMin 20"
         " --alignIntronMax 1000000 --alignMatesGapMax 1000000"
         " --quantMode TranscriptomeSAM --outSAMattributes NH HI AS NM MD"
-        " && {scripts_folder}/RNAseq/softwares/samtools sort -@ 8 -o {output.sortbam} {output.bam} && samtools index -@ 8 {output.sortbam}"
+        " && {scripts_folder}/RNAseq/softwares/samtools sort -@ 8 -o {output.sortbam} {output.bam} && {scripts_folder}/RNAseq/softwares/samtools index -@ 8 {output.sortbam}"
         " && {scripts_folder}/RNAseq/softwares/samtools flagstat -@ 8 {output.sortbam} > {output.flagstat}"
         " && {scripts_folder}/RNAseq/softwares/samtools view -@ 8 -F 0x100 -c {output.sortbam} > {output.read_count}"
-        " && {scripts_folder}/RNAseq/softwares/java -Xmx90g -jar {scripts_folder}/rna-seq/software/picard.jar MarkDuplicates I={output.sortbam} O=/dev/null M={output.dup_mets} REMOVE_DUPLICATES=false CREATE_INDEX=false"
+        " && {scripts_folder}/RNAseq/softwares/java -Xmx90g -jar {scripts_folder}/RNAseq/softwares/picard.jar MarkDuplicates I={output.sortbam} O=/dev/null M={output.dup_mets} REMOVE_DUPLICATES=false CREATE_INDEX=false"
 
 rule qualimap:
     input: 
