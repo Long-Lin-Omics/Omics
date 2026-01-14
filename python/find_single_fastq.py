@@ -29,6 +29,7 @@ if __name__ == "__main__":
     sample_fqs = {}
     total_fqs = 0
     matched_fqs = 0
+    named_rep = {}
     if single_fastqs:
         print("\nDetected Single-End FASTQ Files:")
         for sample, r1 in single_fastqs.items():
@@ -44,7 +45,11 @@ if __name__ == "__main__":
                 else:
                     count[sample] +=1
                     sample_fqs[sample].append(r1)
-                sample = sample + '-rep-' + str(count[sample]) 
+                rep = sample + '-rep-' + str(count[sample])
+                if sample not in named_rep:
+                    named_rep[sample] = {} 
+                named_rep[sample]["\"" + rep + "\""] = 1 
+                sample = rep
             else:
                 continue
             print(f"{sample}:\n  fastq1: \"{r1}\"")
@@ -53,7 +58,7 @@ if __name__ == "__main__":
 
     print("\nSummary Table")
     for k,v in sorted(count.items(), key=lambda item: item[1], reverse=True):
-        print(k + ': ' + str(v))
+        print(k + ': ' + str(v) + " " + ','.join(named_rep[k].keys()))
 
     if matched_fqs == total_fqs:
         print("All fastqs captured!")
