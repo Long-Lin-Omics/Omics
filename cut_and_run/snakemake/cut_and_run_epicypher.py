@@ -9,6 +9,7 @@ cases = list(config["cases"].keys())
 comparisons = list(config["comparisons"].keys())
 output_dir = config["output_dir"]
 identifier = config['identifier']
+SPIKEIN = config.get("spike_in", False)
 fai=config['fai']
 ref_to_annotate=config['ref_to_annotate']
 blacklist=config['blacklist']
@@ -61,11 +62,11 @@ rule all:
         expand("{output_dir}/peaks/{case}_peaks.narrowPeak.clean.annotated",case=cases,output_dir=output_dir),
         expand("{output_dir}/aligned/{sample}_fragment_lengths.txt",sample=sample_names,output_dir=output_dir),
         expand("{output_dir}/ucsc/{sample}_normalized.bw", sample=sample_names, output_dir=output_dir),
-        "{output_dir}/trimmed/target.barcodes.heatmap.png".format(output_dir=output_dir),
+        ("{output_dir}/trimmed/target.barcodes.heatmap.png".format(output_dir=output_dir) if SPIKEIN else []),
         expand("{output_dir}/metaplot/normalized/{comparisons}.xlsx",comparisons=comparisons,output_dir=output_dir),
         # expand("{output_dir}/metaplot/unnormalized/{comparisons}.xlsx",comparisons=comparisons,output_dir=output_dir),
         "{output_dir}/report/stat.tsv".format(output_dir=output_dir),
-        "{output_dir}/aligned/scaleFactor.overview.txt".format(output_dir=output_dir)
+        ("{output_dir}/aligned/scaleFactor.overview.txt".format(output_dir=output_dir) if SPIKEIN else [])
 
         # expand("{output_dir}/ucsc/{sample}_unnormalized.bw", sample=sample_names, output_dir=output_dir),
         # "{output_dir}/diffbind/differential_binding.csv".format(output_dir=output_dir),
@@ -282,15 +283,28 @@ rule scale_factor_overview:
 rule ucsc_bam2bigwig:
     input:
         bam = "{output_dir}/aligned/{sample}_dedup.bam",
-        scale_factor="{output_dir}/aligned/{sample}_scaleFactor.txt"
+        scale_factor = lambda wc: f"{wc.output_dir}/aligned/{wc.sample}_scaleFactor.txt" if SPIKEIN else []
     output:
-        normalized="{output_dir}/ucsc/{sample}_normalized.bw",
-        unnormalized="{output_dir}/ucsc/{sample}_unnormalized.bw"
+        unnormalized = "{output_dir}/ucsc/{sample}_unnormalized.bw",
+        BPMnormalized = "{output_dir}/ucsc/{sample}_BPM_normalized.bw",
+        SpikeINnormalized = "{output_dir}/ucsc/{sample}_spikeIn_normalized.bw" if SPIKEIN else []
     params:
-        scale_factor=lambda wildcards, input: open(input.scale_factor).readlines()[0].strip().split('\t')[0]
+        scale_factor=lambda wildcards, input: open(input.scale_factor).readlines()[0].strip().split('\t')[0] if SPIKEIN else ''
     shell:
-        "{scripts_folder}/cut_and_run/softwares/samtools index {input.bam} && {scripts_folder}/cut_and_run/softwares/bamCoverage -b {input.bam} -o {output.normalized} --scaleFactor {params.scale_factor} &&  {scripts_folder}/cut_and_run/softwares/bamCoverage -b {input.bam} -o {output.unnormalized}"
+        r"""
+        set -euo pipefail
 
+        {scripts_folder}/cut_and_run/softwares/samtools index {input.bam}
+
+        {scripts_folder}/cut_and_run/softwares/bamCoverage -b {input.bam} -o {output.unnormalized} --samFlagExclude 1804
+
+        {scripts_folder}/cut_and_run/softwares/bamCoverage -b {input.bam} -o {output.BPMnormalized} --normalizeUsing BPM --samFlagExclude 1804
+        
+        if [ "{SPIKEIN}" = "True" ]; then
+            {scripts_folder}/cut_and_run/softwares/bamCoverage -b {input.bam} -o {output.SpikeINnormalized} --scaleFactor {params.scale_factor} --normalizeUsing None --samFlagExclude 1804
+        fi
+        """
+       
 rule macs2_with_control:
     input:
         case = lambda wildcards: "{output_dir}/aligned/{case}_dedup.bam".format(output_dir=output_dir,case=wildcards.case),
@@ -360,7 +374,7 @@ rule report_stat:
 
 rule ucsc_hub:
     input:
-        bw=expand("{output_dir}/ucsc/{sample}_normalized.bw", sample=sample_names,output_dir=output_dir),
+        bw=expand("{output_dir}/ucsc/{sample}_spikeIn_normalized.bw",sample=sample_names,output_dir=output_dir) if SPIKEIN else expand("{output_dir}/ucsc/{sample}_BPM_normalized.bw", sample=sample_names,output_dir=output_dir),
         peaks=expand("{output_dir}/ucsc/{case}.peaks.bb", case=cases, output_dir=output_dir, allow_missing=True)
     output:
         hub_dir=directory("/data/wade/linl7/{identifier}/mm10/"),
@@ -434,7 +448,7 @@ rule ucsc_hub:
 rule mataplot:
     input: 
         peaks=lambda wildcards: expand("{output_dir}/peaks/{case}_peaks.narrowPeak",output_dir=output_dir,case=config["comparisons"][wildcards.comparisons]),
-        bws=lambda wildcards: expand("{output_dir}/ucsc/{case}_normalized.bw",output_dir=output_dir,case=config["comparisons"][wildcards.comparisons]),
+        bws=lambda wildcards: expand("{output_dir}/ucsc/{case}_spikeIn_normalized.bw",output_dir=output_dir,case=config["comparisons"][wildcards.comparisons]) if SPIKEIN else lambda wildcards: expand("{output_dir}/ucsc/{case}_BPM_normalized.bw",output_dir=output_dir,case=config["comparisons"][wildcards.comparisons]) ,
         un_bws=lambda wildcards: expand("{output_dir}/ucsc/{case}_unnormalized.bw",output_dir=output_dir,case=config["comparisons"][wildcards.comparisons]) 
     output:
         xlsx="{output_dir}/metaplot/normalized/{comparisons}.xlsx",

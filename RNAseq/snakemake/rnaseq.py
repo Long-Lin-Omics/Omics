@@ -229,8 +229,9 @@ rule ucsc_bam2bigwig:
         bam = "{output_dir}/align/{sample}.Aligned.out.sorted.bam",
         scale_factor = lambda wc: f"{wc.output_dir}/align/{wc.sample}_scaleFactor.txt" if SPIKEIN else []
     output:
-        unnormalized = "{output_dir}/ucsc/{sample}_BPM_normalized.bw",
-        normalized = "{output_dir}/ucsc/{sample}_spikeIn_normalized.bw" if SPIKEIN else []
+        unnormalized = "{output_dir}/ucsc/{sample}_unnormalized.bw",
+        BPMnormalized = "{output_dir}/ucsc/{sample}_BPM_normalized.bw",
+        SpikeINnormalized = "{output_dir}/ucsc/{sample}_spikeIn_normalized.bw" if SPIKEIN else []
     params:
         scale_factor = lambda wc, input: open(input.scale_factor).readline().strip().split("\t")[0] if SPIKEIN else ''
     shell:
@@ -239,12 +240,16 @@ rule ucsc_bam2bigwig:
 
         {scripts_folder}/RNAseq/softwares/bamCoverage -p 8 -b {input.bam} \
             -o {output.unnormalized} \
+            --samFlagExclude 1804
+
+        {scripts_folder}/RNAseq/softwares/bamCoverage -p 8 -b {input.bam} \
+            -o {output.BPMnormalized} \
             --normalizeUsing BPM \
             --samFlagExclude 1804
 
         if [ "{SPIKEIN}" = "True" ]; then
             {scripts_folder}/RNAseq/softwares/bamCoverage -p 8 -b {input.bam} \
-                -o {output.normalized} \
+                -o {output.SpikeINnormalized} \
                 --scaleFactor {params.scale_factor} \
                 --normalizeUsing None \
                 --samFlagExclude 1804
@@ -253,16 +258,22 @@ rule ucsc_bam2bigwig:
 
 rule ucsc_hub:
     input:
+        unnormalized = expand("{output_dir}/ucsc/{sample}_unnormalized.bw",sample=sample_names,output_dir=output_dir),
         bpm_normalized = expand("{output_dir}/ucsc/{sample}_BPM_normalized.bw",sample=sample_names,output_dir=output_dir),
         spikeIn_normalized = expand("{output_dir}/ucsc/{sample}_spikeIn_normalized.bw",sample=sample_names,output_dir=output_dir) if SPIKEIN else []
     output:
+        un_hub = "/data/wade/linl7/" + identifier + "_unnormalised/hub.txt",
         bpm_hub = "/data/wade/linl7/" + identifier + "_BPM_normalised/hub.txt",
         spike_hub = ("/data/wade/linl7/" + identifier + "_spikeIn_normalised/hub.txt" if SPIKEIN else [])
     params:
+        unnormalized_hub = identifier + "_unnormalised",
         bpm_normalized_hub = identifier + "_BPM_normalised",
         spikeIn_normalized_hub = identifier + "_spikeIn_normalised" if SPIKEIN else ''
     shell:
-        "mkdir -p {output_dir}/bws_BPM_normalised  &&"
+        "mkdir -p {output_dir}/bws_unnormalised  &&"
+        " for bw in {input.unnormalized}; do ln -s $bw {output_dir}/bws_unnormalised/; done &&"
+        " bash {scripts_folder}/shell/make_ucsc_hub.sh {output_dir}/bws_unnormalised {params.unnormalized_hub} &&"
+        " mkdir -p {output_dir}/bws_BPM_normalised  &&"
         " for bw in {input.bpm_normalized}; do ln -s $bw {output_dir}/bws_BPM_normalised/; done &&"
         " bash {scripts_folder}/shell/make_ucsc_hub.sh {output_dir}/bws_BPM_normalised {params.bpm_normalized_hub} &&"
         " if [ \"{SPIKEIN}\" = \"True\" ]; then "

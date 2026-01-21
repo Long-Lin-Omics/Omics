@@ -1,6 +1,8 @@
 identifier: "DPPA4_H3k4me3"
 output_dir: "./H3k4me3"  
 
+spike_in: true
+
 cases:
   H3K4me3_Dppa4Inomin-rep-1:
     fastq1: "./raw_data/NS20221.h3k4Dppa4InominOHTR1_20250929_120806.L001.1.fastq.gz"
