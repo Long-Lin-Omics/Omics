@@ -115,12 +115,16 @@ if (! is.null(args$genesHeatmap)){
   print(paste(missing, "genes not in the matrix"))
   mat <- norm_counts[deg_genes, ]
   mat_z <- t(scale(t(mat)))
+  row_mean <- rowMeans(mat_z[, 1:2], na.rm = TRUE)
+  row_order <- order(row_mean)
+  mat_z <- mat_z[row_order, ] 
   write.table(mat_z,file='nolog.txt')
   geneHeatmp <- paste0(args$output_prefix,'.geenHeatmap.png')
   png(geneHeatmp,width = 1500, height = 1500,res=300)
   pheatmap(mat_z,
          show_rownames = FALSE,
-         cluster_cols = TRUE,
+         cluster_cols = FALSE,
+         cluster_rows = FALSE,
          clustering_distance_rows = "euclidean",
          clustering_distance_cols = "euclidean",
          clustering_method = "complete",
@@ -130,11 +134,15 @@ if (! is.null(args$genesHeatmap)){
   log_counts <- log2(norm_counts + 1)
   mat <- log_counts[deg_genes, ]
   mat_z <- t(scale(t(mat)))
+  row_mean <- rowMeans(mat_z[, 1:2], na.rm = TRUE)
+  row_order <- order(row_mean)
+  mat_z <- mat_z[row_order, ]
   geneHeatmp <- paste0(args$output_prefix,'.geenHeatmap.log.png')
   png(geneHeatmp,width = 1500, height = 1500,res=300)
   pheatmap(mat_z,
          show_rownames = FALSE,
-         cluster_cols = TRUE,
+         cluster_cols = FALSE,
+         cluster_rows = FALSE,
          clustering_distance_rows = "euclidean",
          clustering_distance_cols = "euclidean",
          clustering_method = "complete",

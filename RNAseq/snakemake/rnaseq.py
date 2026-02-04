@@ -318,7 +318,7 @@ def get_condition(sample):
 
 rule deseq2:
     input: 
-        salmon_sf=lambda wildcards: expand("{output_dir}/align/{case}.Aligned.toTranscriptome.salmon_quant/quant.sf",output_dir=output_dir,case=config["comparisons"][wildcards.comparisons])
+        salmon_sf=lambda wildcards: expand("{output_dir}/align/{case}.Aligned.toTranscriptome.salmon_quant/quant.sf",output_dir=output_dir,case=sorted(config["comparisons"][wildcards.comparisons]))
     output:
         sample_list = "{output_dir}/DEG_by_DESeq2_no_spike/{comparisons}/sample.list",
         degs_no_spike = "{output_dir}/DEG_by_DESeq2_no_spike/{comparisons}/{comparisons}.count10.groupsize3.deg.txt",
