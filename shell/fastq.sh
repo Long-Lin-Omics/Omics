@@ -141,10 +141,14 @@ if (use_clamp) {
 }
 
 png(png_out, width=1200, height=800)
-hist(lens_hist, breaks=breaks,
+h=hist(lens_hist, breaks=breaks,
      right=FALSE, include.lowest=TRUE,
+     freq=TRUE,
+     probability=FALSE,
      main=main_t,
      xlab="Read length", ylab="Count")
+axis(4,at=pretty(h$counts),labels=round(pretty(h$counts) / length(lens_hist), 3))
+mtext("Frequency", side=4, line=3)
 dev.off()
 
 cat("\n# Wrote:\n")
