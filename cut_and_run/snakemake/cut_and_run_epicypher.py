@@ -61,14 +61,13 @@ rule all:
         expand("{output_dir}/peaks/{case}_peaks.narrowPeak",case=cases,output_dir=output_dir),
         expand("{output_dir}/peaks/{case}_peaks.narrowPeak.clean.annotated",case=cases,output_dir=output_dir),
         expand("{output_dir}/aligned/{sample}_fragment_lengths.txt",sample=sample_names,output_dir=output_dir),
-        expand("{output_dir}/ucsc/{sample}_normalized.bw", sample=sample_names, output_dir=output_dir),
+        # expand("{output_dir}/ucsc/{sample}_normalized.bw", sample=sample_names, output_dir=output_dir),
         ("{output_dir}/trimmed/target.barcodes.heatmap.png".format(output_dir=output_dir) if SPIKEIN else []),
         expand("{output_dir}/metaplot/normalized/{comparisons}.xlsx",comparisons=comparisons,output_dir=output_dir),
         # expand("{output_dir}/metaplot/unnormalized/{comparisons}.xlsx",comparisons=comparisons,output_dir=output_dir),
         "{output_dir}/report/stat.tsv".format(output_dir=output_dir),
-        ("{output_dir}/aligned/scaleFactor.overview.txt".format(output_dir=output_dir) if SPIKEIN else [])
-
-        # expand("{output_dir}/ucsc/{sample}_unnormalized.bw", sample=sample_names, output_dir=output_dir),
+        ("{output_dir}/aligned/scaleFactor.overview.txt".format(output_dir=output_dir) if SPIKEIN else []),
+        expand("{output_dir}/ucsc/{sample}_unnormalized.bw", sample=sample_names, output_dir=output_dir),
         # "{output_dir}/diffbind/differential_binding.csv".format(output_dir=output_dir),
         # "{output_dir}/go_kegg/go_analysis.csv".format(output_dir=output_dir),
         # expand("{output_dir}/comparisons/{comparison}_heatmap.png", comparison=[c["name"] for c in comparisons], output_dir=output_dir),
