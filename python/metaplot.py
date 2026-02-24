@@ -56,21 +56,60 @@ ws_data = wb.create_sheet("data")
 for r in dataframe_to_rows(df_new, index=False, header=True):
     ws_data.append(r)
 
-# Create the metaplot and save it as a PNG file
+                # # Create the metaplot and save it as a PNG file
+                # plt.figure(figsize=(8, 5))
+                # plt.plot(df_new.iloc[:, 0], df_new.iloc[:, 2:], linewidth=2)
+                # plt.xlabel("Genomic Position")
+                # ylabel = "Log2 Signal Intensity" if apply_log else "Signal Intensity"
+                # plt.ylabel(ylabel)
+                # title = "Metaplot (log2-transformed)" if apply_log else "Metaplot"
+                # plt.title(title)
+                # plt.legend(df_new.columns[2:], title="Samples")
+                # plt.grid()
+
+                # # Save plot to a temporary file
+                # plot_file = output_excel + ".metaplot.png"
+                # plt.savefig(plot_file)
+                # plt.close()  # Free memory
+
 plt.figure(figsize=(8, 5))
-plt.plot(df_new.iloc[:, 0], df_new.iloc[:, 2:], linewidth=2)
+
+x = df_new.iloc[:, 0].values
+sample_cols = list(df_new.columns[2:])  # samples start from col index 2
+
+# A set of distinct marker shapes (循环使用，样本多也不会报错)
+markers = ['o', 's', '^', 'D', 'v', 'P', 'X', '*', '<', '>', 'h', 'H', '+', 'x', '1', '2', '3', '4']
+
+# 让 marker 不至于太密：每隔若干点打一个
+# 你也可以改成更大/更小，比如 10 或 30
+markevery = max(1, len(x) // 25)
+
+for i, col in enumerate(sample_cols):
+    y = df_new[col].values
+    m = markers[i % len(markers)]
+    plt.plot(
+        x, y,
+        linewidth=2,
+        marker=m,
+        markevery=markevery,
+        markersize=6,
+        markerfacecolor='none',   # 空心点更清晰（也更适合黑白打印）
+        markeredgewidth=1.5,
+        label=col
+    )
+
 plt.xlabel("Genomic Position")
 ylabel = "Log2 Signal Intensity" if apply_log else "Signal Intensity"
 plt.ylabel(ylabel)
 title = "Metaplot (log2-transformed)" if apply_log else "Metaplot"
 plt.title(title)
-plt.legend(df_new.columns[2:], title="Samples")
-plt.grid()
+plt.legend(title="Samples", ncol=1, fontsize=9)  # 样本很多可调 ncol=2/3
+plt.grid(True)
 
 # Save plot to a temporary file
 plot_file = output_excel + ".metaplot.png"
-plt.savefig(plot_file)
-plt.close()  # Free memory
+plt.savefig(plot_file, dpi=200, bbox_inches="tight")
+plt.close()
 
 # Add the metaplot image to a new sheet called 'Metaplot'
 ws_metaplot = wb.create_sheet("Metaplot")

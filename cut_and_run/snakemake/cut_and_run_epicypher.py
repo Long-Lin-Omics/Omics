@@ -346,7 +346,7 @@ rule uscs_peak2bed:
     output:
         "{output_dir}/ucsc/{case}.peaks.bb"
     shell:
-        "Rscript {scripts_folder}/../CHIPseq/peak_to_bigbed.R {input} {output} {fai}"
+        "Rscript {scripts_folder}/CHIPseq/peak_to_bigbed.R {input} {output} {fai}"
 
 
 # rule diffbind:
@@ -379,7 +379,8 @@ rule ucsc_hub:
         hub_dir=directory("/data/wade/linl7/{identifier}/mm10/"),
         hub_file="/data/wade/linl7/{identifier}/hub.txt",
         genomes_file="/data/wade/linl7/{identifier}/genomes.txt",
-        trackdb_file="/data/wade/linl7/{identifier}/mm10/trackDb.txt"
+        trackdb_file="/data/wade/linl7/{identifier}/mm10/trackDb.txt",
+        path_file=output_dir + '/' + "{identifier}.track.path.txt"
     params:
         sorted_sample_names = sorted(sample_names),
         sorted_cases_names = sorted(cases)
@@ -394,9 +395,9 @@ rule ucsc_hub:
         done
 
         # Create the main hub file
-        echo "hub ChIPseq_Hub" > {output.hub_file}
-        echo "shortLabel ChIP-seq Hub" >> {output.hub_file}
-        echo "longLabel ChIP-seq Data Hub" >> {output.hub_file}
+        echo "hub CutAndTag_Hub" > {output.hub_file}
+        echo "shortLabel CutAndTag Hub" >> {output.hub_file}
+        echo "longLabel CutAndTag Data Hub" >> {output.hub_file}
         echo "genomesFile genomes.txt" >> {output.hub_file}
         echo "email long.lin@nih.gov" >> {output.hub_file}
         
@@ -413,9 +414,13 @@ rule ucsc_hub:
         for sample in {params.sorted_sample_names};
         do 
             echo "track $sample " >> {output.trackdb_file}
-            echo "bigDataUrl ${{sample}}_normalized.bw" >> {output.trackdb_file}
+            if [ "{SPIKEIN}" = "True" ]; then
+                echo "bigDataUrl ${{sample}}_spikeIn_normalized.bw" >> {output.trackdb_file}
+            else
+                echo "bigDataUrl ${{sample}}_BPM_normalized.bw" >> {output.trackdb_file}
+            fi
             echo "shortLabel $sample signal" >> {output.trackdb_file}
-            echo "longLabel ChIP-seq $sample signal track" >> {output.trackdb_file}
+            echo "longLabel CutAndTag $sample signal track" >> {output.trackdb_file}
             echo "type bigWig" >> {output.trackdb_file}
             echo "visibility full" >> {output.trackdb_file}
             echo "alwaysZero on" >> {output.trackdb_file}
@@ -431,7 +436,7 @@ rule ucsc_hub:
                 echo "track ${{case}}_peaks" >> {output.trackdb_file}
                 echo "bigDataUrl ${{case}}.peaks.bb" >> {output.trackdb_file}
                 echo "shortLabel $case peaks" >> {output.trackdb_file}
-                echo "longLabel ChIP-seq $case peak calls" >> {output.trackdb_file}
+                echo "longLabel CutAndTag $case peak calls" >> {output.trackdb_file}
                 echo "type bigBed" >> {output.trackdb_file}
                 echo "visibility dense" >> {output.trackdb_file}
                 echo -e "color 200,0,0" >> {output.trackdb_file}
@@ -440,6 +445,8 @@ rule ucsc_hub:
                 echo "" >> {output.trackdb_file}
             fi
         done
+    
+        echo  "UCSC Track Hub created at: https://orio.niehs.nih.gov/ucscview/linl7/{identifier}/hub.txt" | tee -a {output.path_file}
 
         """
 
