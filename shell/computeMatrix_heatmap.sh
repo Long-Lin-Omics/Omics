@@ -6,6 +6,7 @@ set -euo pipefail
 #########################
 THREADS=8
 BED=""
+PEAKS=""
 BW_FILES=""
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DEFAULT_METAPLOT="$DIR/../python/metaplot.py"
@@ -18,27 +19,61 @@ METAPLOT_SCRIPT=""
 # 用法函数
 #########################
 usage() {
-    echo "Usage: $0 -p <peaks> [-b <bed>] -s <bigWig(s)> -o <out_prefix> [-t <threads>] [-m] [-M <metaplot_script>]"
+    echo "Usage:"
+    echo "  $0 -p <peaks> [-b <bed>] -s <bigWig(s)> -o <out_prefix> [-t <threads>] [-m] [-M <metaplot_script>]"
     echo ""
     echo "Required:"
-    echo "  -p  peaks file(s). Can be one file or multiple files (space-separated, quoted)."
-    echo "  -s  bigWig files (space-separated, quoted)."
+    echo "  -p  peaks file(s): one or multiple files (space-separated, quoted) OR"
+    echo "  -b  bed file (optional; if provided, uses it directly)"
+    echo "  -s  bigWig files (space-separated, quoted)"
     echo "  -o  output prefix"
     echo ""
     echo "Optional:"
-    echo "  -b  bed file (if provided, use it directly)"
     echo "  -t  threads (default 8)"
     echo "  -m  use Python metaplot (if -M not provided, uses default: $DEFAULT_METAPLOT)"
-    echo "  -M  path to Python metaplot script (requires -m to take effect)"
+    echo "  -M  path to Python metaplot script (works only when -m is set)"
     echo ""
     echo "Behavior:"
-    echo "  * If -m is NOT set: use plotHeatmap to draw heatmap PDF."
-    echo "  * If -m is set: run Python metaplot script to produce XLSX."
+    echo "  * Without -m: plotHeatmap output PDF (with shortened sample labels)."
+    echo "  * With -m: run Python metaplot and output XLSX."
     exit 1
 }
 
 #########################
-# 解析命令行参数
+# 名称缩短函数：basename + 去扩展名 + 去常见 suffix
+#########################
+shorten_label() {
+    local f="$1"
+    local name
+    name="$(basename "$f")"
+
+    # 去掉扩展名
+    name="$(echo "$name" | sed -E 's/\.(bw|bigWig)(\.gz)?$//')"
+
+    # 去掉“多种可能的尾部后缀”（按需自行追加）
+    # 规则：只去末尾一次/多次都行（用循环更激进；这里用一次性多后缀匹配更简单）
+    name="$(echo "$name" | sed -E '
+        s/(_BPM_normalized|_RPM_normalized|_CPM_normalized|_RPKM_normalized)$//;
+        s/(_BPM|_RPM|_CPM|_RPKM)$//;
+        s/(_normalized|_norm|_normalised)$//;
+        s/(_signal|_coverage|_track|_wiggle|_bw|_bigwig)$//;
+        s/(_clean|_filtered)$//;
+    ')"
+
+    # 再做一次：有些文件名可能叠了多个后缀（例如 *_BPM_normalized_clean）
+    name="$(echo "$name" | sed -E '
+        s/(_BPM_normalized|_RPM_normalized|_CPM_normalized|_RPKM_normalized)$//;
+        s/(_BPM|_RPM|_CPM|_RPKM)$//;
+        s/(_normalized|_norm|_normalised)$//;
+        s/(_signal|_coverage|_track|_wiggle|_bw|_bigwig)$//;
+        s/(_clean|_filtered)$//;
+    ')"
+
+    echo "$name"
+}
+
+#########################
+# 解析命令行参数（修法1）
 #########################
 while getopts "p:b:s:o:t:mM:" opt; do
     case $opt in
@@ -56,18 +91,28 @@ done
 #########################
 # 参数检查
 #########################
-# peaks 或 bed 至少提供一个（但你 usage 里把 -p 设成 required；这里仍兼容你原逻辑）
 if [ -z "${PEAKS:-}" ] && [ -z "${BED:-}" ]; then
     echo "Error: You must provide either peaks (-p) or BED (-b)"
     usage
 fi
-
 [ -z "${BW_FILES:-}" ] && { echo "Error: -s is required"; usage; }
 [ -z "${OUT_PREFIX:-}" ] && { echo "Error: -o is required"; usage; }
 
 # 如果用户开了 -m 但没给 -M，就用默认脚本
 if [ "$METAPLOT" -eq 1 ] && [ -z "$METAPLOT_SCRIPT" ]; then
     METAPLOT_SCRIPT="$DEFAULT_METAPLOT"
+fi
+
+#########################
+# 解析 peaks / bw 为数组（更稳）
+#########################
+# 用户一般会把它们用引号括起来：-s "a.bw b.bw"
+read -r -a BW_ARR <<< "$BW_FILES"
+
+# PEAKS 可为空（如果走 -b），不为空就解析
+PEAKS_ARR=()
+if [ -n "${PEAKS:-}" ]; then
+    read -r -a PEAKS_ARR <<< "$PEAKS"
 fi
 
 #########################
@@ -85,12 +130,10 @@ HEATMAP="${OUT_PREFIX}.heatmap.pdf"
 if [ -n "$BED" ] && [ -f "$BED" ]; then
     echo "Using provided BED: $BED"
     REGION_FILE="$BED"
-elif [ -n "${PEAKS:-}" ]; then
+elif [ "${#PEAKS_ARR[@]}" -gt 0 ]; then
     if [ ! -f "$MERGED_BED" ]; then
         echo "Generating merged BED from peaks..."
-        # PEAKS 可能是多个文件（空格分隔），这里故意不加引号以让 shell 展开成多个参数
-        # 一般 narrowPeak/bed 文件名不会带空格；若会带空格，建议改用数组传参。
-        cat $PEAKS | sort -k1,1 -k2,2n | bedtools merge -d 100 -i - > "$MERGED_BED"
+        cat "${PEAKS_ARR[@]}" | sort -k1,1 -k2,2n | bedtools merge -d 100 -i - > "$MERGED_BED"
     else
         echo "Merged BED already exists: $MERGED_BED, skipping generation"
     fi
@@ -101,18 +144,32 @@ else
 fi
 
 #########################
-# Step 2: computeMatrix
+# Step 2: 生成 samplesLabel（用于 plotHeatmap 显示更短样本名）
+#########################
+SAMPLE_LABELS=()
+for f in "${BW_ARR[@]}"; do
+    SAMPLE_LABELS+=("$(shorten_label "$f")")
+done
+
+echo "Samples:"
+for i in "${!BW_ARR[@]}"; do
+    echo "  ${BW_ARR[$i]}  ->  ${SAMPLE_LABELS[$i]}"
+done
+
+#########################
+# Step 3: computeMatrix
 #########################
 if [ ! -f "$MATRIX" ]; then
     echo "Generating matrix with computeMatrix..."
     computeMatrix reference-point \
         -p "$THREADS" \
         --referencePoint center \
-        -S $BW_FILES \
+        -S "${BW_ARR[@]}" \
         -R "$REGION_FILE" \
         --beforeRegionStartLength 2000 \
         --afterRegionStartLength 2000 \
         --binSize 40 \
+        --samplesLabel "${SAMPLE_LABELS[@]}" \
         -o "$MATRIX" \
         --outFileNameMatrix "$TSV"
 else
@@ -120,7 +177,7 @@ else
 fi
 
 #########################
-# Step 3: 统计 sample 数
+# Step 4: 统计 sample 数
 #########################
 N=$(computeMatrixOperations info -m "$MATRIX" | \
     awk '
@@ -133,7 +190,7 @@ N=$(computeMatrixOperations info -m "$MATRIX" | \
 echo "Detected $N samples."
 
 #########################
-# Step 4: 绘图
+# Step 5: 绘图
 #########################
 if [ "$METAPLOT" -eq 1 ]; then
     # 使用 Python 脚本绘图（输出 XLSX）
@@ -156,6 +213,8 @@ else
             -out "$HEATMAP" \
             --colorMap RdBu \
             --whatToShow 'plot, heatmap and colorbar'
+            # 如果你想带曲线：把上一行改成
+            # --whatToShow 'heatmap and profile and colorbar'
     else
         echo "Heatmap already exists: $HEATMAP, skipping plotting"
     fi

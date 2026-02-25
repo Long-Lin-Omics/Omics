@@ -342,7 +342,7 @@ rule clean_and_annotate_peak:
 
 rule uscs_peak2bed:
     input:
-        "{output_dir}/peaks/{case}_peaks.narrowPeak"
+        "{output_dir}/peaks/{case}_peaks.narrowPeak.clean"
     output:
         "{output_dir}/ucsc/{case}.peaks.bb"
     shell:
@@ -363,7 +363,7 @@ rule report_stat:
         fqs=expand("{output_dir}/input/{sample}.fastq.count.txt", output_dir=output_dir,sample=sample_names),
         trim_fqs=expand("{output_dir}/trimmed/{sample}.trimmed.fastq.count.txt",output_dir=output_dir,sample=sample_names),
         dup_mets=expand("{output_dir}/aligned/{sample}_dup_metrics.txt",output_dir=output_dir,sample=sample_names),
-        peaks=expand("{output_dir}/peaks/{sample}_peaks.narrowPeak",output_dir=output_dir,sample=cases)
+        peaks=expand("{output_dir}/peaks/{sample}_peaks.narrowPeak.clean",output_dir=output_dir,sample=cases)
     output:
         "{output_dir}/report/stat.tsv"
     params:
@@ -453,7 +453,7 @@ rule ucsc_hub:
 
 rule mataplot:
     input: 
-        peaks=lambda wildcards: expand("{output_dir}/peaks/{case}_peaks.narrowPeak",output_dir=output_dir,case=config["comparisons"][wildcards.comparisons]),
+        peaks=lambda wildcards: expand("{output_dir}/peaks/{case}_peaks.narrowPeak.clean",output_dir=output_dir,case=config["comparisons"][wildcards.comparisons]),
         bws=lambda wildcards: expand("{output_dir}/ucsc/{case}_spikeIn_normalized.bw",output_dir=output_dir,case=config["comparisons"][wildcards.comparisons]) if SPIKEIN else lambda wildcards: expand("{output_dir}/ucsc/{case}_BPM_normalized.bw",output_dir=output_dir,case=config["comparisons"][wildcards.comparisons]) ,
         un_bws=lambda wildcards: expand("{output_dir}/ucsc/{case}_unnormalized.bw",output_dir=output_dir,case=config["comparisons"][wildcards.comparisons]) 
     output:
