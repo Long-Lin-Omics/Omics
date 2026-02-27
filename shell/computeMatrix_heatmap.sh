@@ -5,6 +5,7 @@ set -euo pipefail
 # 默认参数
 #########################
 THREADS=8
+REFERENCE_POINT="center"   # center | TSS | TES
 BED=""
 PEAKS=""
 BW_FILES=""
@@ -20,7 +21,7 @@ METAPLOT_SCRIPT=""
 #########################
 usage() {
     echo "Usage:"
-    echo "  $0 -p <peaks> [-b <bed>] -s <bigWig(s)> -o <out_prefix> [-t <threads>] [-m] [-M <metaplot_script>]"
+    echo "  $0 -p <peaks> [-b <bed>] -s <bigWig(s)> -o <out_prefix> [-t <threads>] [-r <center|TSS|TES>] [-m] [-M <metaplot_script>]"
     echo ""
     echo "Required:"
     echo "  -p  peaks file(s): one or multiple files (space-separated, quoted) OR"
@@ -32,6 +33,7 @@ usage() {
     echo "  -t  threads (default 8)"
     echo "  -m  use Python metaplot (if -M not provided, uses default: $DEFAULT_METAPLOT)"
     echo "  -M  path to Python metaplot script (works only when -m is set)"
+    echo "  -r  referencePoint for computeMatrix reference-point: center|TSS|TES (default center)"
     echo ""
     echo "Behavior:"
     echo "  * Without -m: plotHeatmap output PDF (with shortened sample labels)."
@@ -75,13 +77,14 @@ shorten_label() {
 #########################
 # 解析命令行参数（修法1）
 #########################
-while getopts "p:b:s:o:t:mM:" opt; do
+while getopts "p:b:s:o:t:r:mM:" opt; do
     case $opt in
         p) PEAKS="$OPTARG" ;;
         b) BED="$OPTARG" ;;
         s) BW_FILES="$OPTARG" ;;
         o) OUT_PREFIX="$OPTARG" ;;
         t) THREADS="$OPTARG" ;;
+        r) REFERENCE_POINT="$OPTARG" ;;
         m) METAPLOT=1 ;;
         M) METAPLOT_SCRIPT="$OPTARG" ;;
         *) usage ;;
@@ -102,6 +105,15 @@ fi
 if [ "$METAPLOT" -eq 1 ] && [ -z "$METAPLOT_SCRIPT" ]; then
     METAPLOT_SCRIPT="$DEFAULT_METAPLOT"
 fi
+
+case "$REFERENCE_POINT" in
+  center|TSS|TES) ;;
+  *)
+    echo "Error: -r must be one of: center, TSS, TES (got: $REFERENCE_POINT)"
+    usage
+    ;;
+esac
+
 
 #########################
 # 解析 peaks / bw 为数组（更稳）
@@ -163,7 +175,7 @@ if [ ! -f "$MATRIX" ]; then
     echo "Generating matrix with computeMatrix..."
     computeMatrix reference-point \
         -p "$THREADS" \
-        --referencePoint center \
+        --referencePoint "$REFERENCE_POINT" \
         -S "${BW_ARR[@]}" \
         -R "$REGION_FILE" \
         --beforeRegionStartLength 2000 \
