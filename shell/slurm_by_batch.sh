@@ -11,7 +11,8 @@ LINES_PER_TASK="$2"
 CPUS_PER_TASK="$3"
 
 # 前缀
-SLURM_PREFIX="slurm_job"
+# SLURM_PREFIX="slurm_job"
+SLURM_PREFIX=$SCRIPT_FILE
 
 # 检查脚本文件是否存在
 if [ ! -f "$SCRIPT_FILE" ]; then
