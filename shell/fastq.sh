@@ -23,6 +23,8 @@ pair_fq_count_check () {
         echo "$reads1" > "$output_file"
     fi
 }
+
+
 # Usage:
 #   fastq_len_qc <fastq|fastq.gz> <out_prefix> [binsize] [break_min] [break_max]
 # Examples:
@@ -30,7 +32,7 @@ pair_fq_count_check () {
 #   fastq_len_qc reads.fastq.gz out/readlen 25
 #   fastq_len_qc reads.fastq.gz out/readlen 25 10 500   # clamp <10 to 10, >500 to 500 for histogram
 
-fastq_len_qc() {
+fastq_len_hist() {
   local fq="$1"
   local prefix="$2"
   local binsize="${3:-50}"
@@ -140,7 +142,7 @@ if (use_clamp) {
   main_t <- paste0("Read length distribution (bin=", binsize, ")")
 }
 
-png(png_out, width=1200, height=800)
+png(png_out, width=1200, height=800,res=200)
 h=hist(lens_hist, breaks=breaks,
      right=FALSE, include.lowest=TRUE,
      freq=TRUE,
@@ -162,3 +164,82 @@ RSCRIPT
   echo "  $q_out" >&2
   echo "  $hist_png" >&2
 }
+
+
+
+extract_fastq_by_id() {
+    local fq_file="$1"
+    shift
+    local ids=("$@")
+
+    if [[ ! -f "$fq_file" ]]; then
+        echo "Error: file not found: $fq_file" >&2
+        return 1
+    fi
+
+    if [[ ${#ids[@]} -eq 0 ]]; then
+        echo "Usage: extract_fastq_by_id <fastq(.gz)> <id1> [id2 ...]" >&2
+        return 1
+    fi
+
+    local tmp_ids
+    tmp_ids=$(mktemp)
+
+    printf "%s\n" "${ids[@]}" | sed 's/^@//' > "$tmp_ids"
+
+    local reader="cat"
+    [[ "$fq_file" == *.gz ]] && reader="zcat"
+
+    $reader "$fq_file" | awk -v idfile="$tmp_ids" '
+        BEGIN {
+            total = 0
+            dup = 0
+
+            while ((getline line < idfile) > 0) {
+                total++
+                if (line in ids) {
+                    dup++
+                    dup_ids[line]++
+                }
+                ids[line] = 1
+            }
+
+            print "[INFO] Input ID count:", total > "/dev/stderr"
+
+            if (dup > 0) {
+                print "[WARN] Duplicated IDs:", dup > "/dev/stderr"
+                for (d in dup_ids) {
+                    print "[WARN] duplicate:", d, "(" dup_ids[d]+1 " times)" > "/dev/stderr"
+                }
+            }
+        }
+
+        NR % 4 == 1 {
+            id = $1
+            sub(/^@/, "", id)
+            keep = (id in ids)
+            header = $0
+        }
+
+        NR % 4 == 2 {
+            if (keep) {
+                print header
+                print $0
+            }
+        }
+    '
+
+    rm -f "$tmp_ids"
+}
+
+
+
+
+
+
+
+
+
+
+
+
