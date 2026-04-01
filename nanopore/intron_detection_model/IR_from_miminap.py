@@ -5,6 +5,16 @@ import re
 from multiprocessing import Pool
 from collections import defaultdict
 
+"""
+    简单分类逻辑：
+    - is.unmapped -> unmapped
+    - 如果 CIGAR 里有 N -> MATURE
+    - 如果无 N，但 read 覆盖了基因内一个 intron -> IR
+    - 其他情况 -> UNSURE
+    """
+
+
+
 def normalize_chrom_name(chrom, bam_refs):
     # 1. direct match
     if chrom in bam_refs:
@@ -34,7 +44,6 @@ def parse_gtf(gtf_file, bam_references):
     bam_refs = set(bam_references)
     matched_bam_chroms = set()
     gene_exons = defaultdict(list)
-
     with open(gtf_file) as f:
         for line in f:
             if line.startswith("#"):
@@ -59,17 +68,11 @@ def parse_gtf(gtf_file, bam_references):
         print("\n[BAM chroms without GTF match]:")
         for bchr in sorted(unmapped_bam_chr):
             print(" ", bchr)
-
     return gene_exons
 
 
 def classify_read(aln, exons):
-    """
-    简单分类逻辑：
-    - 如果 CIGAR 里有 N -> MATURE
-    - 如果无 N，但 read 覆盖了基因内一个 intron -> IR
-    - 其他情况 -> UNSURE
-    """
+    
     if aln.is_unmapped:
         return "UNMAPPED_but_overlapped"
 
