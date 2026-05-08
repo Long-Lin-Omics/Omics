@@ -178,8 +178,8 @@ if [ ! -f "$MATRIX" ]; then
         --referencePoint "$REFERENCE_POINT" \
         -S "${BW_ARR[@]}" \
         -R "$REGION_FILE" \
-        --beforeRegionStartLength 2000 \
-        --afterRegionStartLength 2000 \
+        --beforeRegionStartLength 5000 \
+        --afterRegionStartLength 5000 \
         --binSize 40 \
         --samplesLabel "${SAMPLE_LABELS[@]}" \
         -o "$MATRIX" \
