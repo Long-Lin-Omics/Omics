@@ -1,12 +1,12 @@
 
 import re
-
+import os
 
 #configfile: "config.yaml"
 
 cases = list(config["cases"].keys())
 comparisons = list(config["comparisons"].keys())
-output_dir = config["output_dir"]
+output_dir = os.path.abspath(config["output_dir"])
 identifier = config['identifier']
 SPIKEIN = config.get("spike_in", False)
 genome = config['genome']
@@ -271,14 +271,14 @@ rule ucsc_hub:
         spikeIn_normalized_hub = identifier + "_spikeIn_normalised" if SPIKEIN else ''
     shell:
         "mkdir -p {output_dir}/bws_unnormalised  &&"
-        " for bw in {input.unnormalized}; do ln -s $bw {output_dir}/bws_unnormalised/; done &&"
+        " for bw in {input.unnormalized}; do ln -sf $bw {output_dir}/bws_unnormalised/; done &&"
         " bash {scripts_folder}/shell/make_ucsc_hub.sh {output_dir}/bws_unnormalised {params.unnormalized_hub} &&"
         " mkdir -p {output_dir}/bws_BPM_normalised  &&"
-        " for bw in {input.bpm_normalized}; do ln -s $bw {output_dir}/bws_BPM_normalised/; done &&"
+        " for bw in {input.bpm_normalized}; do ln -sf $bw {output_dir}/bws_BPM_normalised/; done &&"
         " bash {scripts_folder}/shell/make_ucsc_hub.sh {output_dir}/bws_BPM_normalised {params.bpm_normalized_hub} &&"
         " if [ \"{SPIKEIN}\" = \"True\" ]; then "
         " mkdir -p {output_dir}/bws_spikeIn_normalised &&"
-        " for bw in {input.spikeIn_normalized}; do ln -s $bw {output_dir}/bws_spikeIn_normalised/; done &&"
+        " for bw in {input.spikeIn_normalized}; do ln -sf $bw {output_dir}/bws_spikeIn_normalised/; done &&"
         " bash {scripts_folder}/shell/make_ucsc_hub.sh {output_dir}/bws_spikeIn_normalised {params.spikeIn_normalized_hub}; "
         " fi"
 

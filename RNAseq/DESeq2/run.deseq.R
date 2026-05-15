@@ -224,7 +224,8 @@ if (! is.null(args$genesHeatmap)){
     y_len = lims[4] - lims[3]
     x_len = lims[2] - lims[1]
     y4txt = lims[4] - y_len/4
-    x4txt = (lims[1] + lims[2]) / 2 + x_len/4
+    # x4txt = (lims[1] + lims[2]) / 2 + x_len/4
+    x4txt =  min(abs(c(lims[1], lims[2])))/2 
     text(x4txt,y4txt,N_up)
     text(-x4txt,y4txt,N_dn)
   }

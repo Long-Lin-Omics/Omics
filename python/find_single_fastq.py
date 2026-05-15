@@ -36,7 +36,10 @@ if __name__ == "__main__":
             total_fqs += 1 
             sampleNameMatch = re.search(args.sampleName, sample)
             if sampleNameMatch:
-                sample = sampleNameMatch.groups()[0]
+                if len(sampleNameMatch.groups())>1:
+                   sample = ''.join(sampleNameMatch.groups())
+                else:    
+                    sample = sampleNameMatch.groups()[0]
                 matched_fqs += 1
                 if sample not in count:
                     count[sample] = 1
