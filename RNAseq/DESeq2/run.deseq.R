@@ -105,7 +105,7 @@ valcano_plot = paste0(args$output_prefix,'.valcano.png')
 
 # Save DEG results and summary
 final_res = cbind(resLFC,res[,c('log2FoldChange','lfcSE','stat')])
-colnames(final_res)[6:7] = paste0(colnames(final_res)[6:7],'_no_LFC')
+colnames(final_res)[6:7] = paste0(colnames(final_res)[6:8],'_no_Shrink')
 
 # Get normalized counts
 norm_counts <- counts(dds, normalized=TRUE)
