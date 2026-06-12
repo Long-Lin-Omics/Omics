@@ -36,6 +36,42 @@ plot_quantiles <- function(
     par(mfrow = c(1, 2))
 
     ## Histogram
+    plot_hist_with_quantiles(x_clean)
+
+    ## Density
+    plot_density_with_quantiles(x_clean)
+
+    dev.off()
+
+    invisible(
+        list(
+            n = length(x_clean),
+            na_count = na_count,
+            quantiles = quantile(x_clean)
+        )
+    )
+}
+
+plot_hist_with_quantiles <- function(x){
+    na_count <- sum(is.na(x))
+    if (na_count > 0) {
+        warning(
+            sprintf(
+                "%d NA values found and removed before plotting.",
+                na_count
+            )
+        )
+    }
+
+    # remove NA
+    x_clean <- x[!is.na(x)]
+    if (length(x_clean) == 0) {
+        stop("No non-NA values remaining.")
+    }
+
+    # quantiles
+    qs <- quantile(x_clean, probs = probs)
+
     hist(
         x_clean,
         breaks = 30,
@@ -59,7 +95,28 @@ plot_quantiles <- function(
         bty = "n"
     )
 
-    ## Density
+}
+
+plot_density_with_quantiles <- function(x){
+    na_count <- sum(is.na(x))
+    if (na_count > 0) {
+        warning(
+            sprintf(
+                "%d NA values found and removed before plotting.",
+                na_count
+            )
+        )
+    }
+
+    # remove NA
+    x_clean <- x[!is.na(x)]
+    if (length(x_clean) == 0) {
+        stop("No non-NA values remaining.")
+    }
+
+    # quantiles
+    qs <- quantile(x_clean, probs = probs)
+
     plot(
         density(x_clean),
         main = "Density Plot with Quantiles",
@@ -79,14 +136,6 @@ plot_quantiles <- function(
         lwd = 2,
         bty = "n"
     )
-
-    dev.off()
-
-    invisible(
-        list(
-            n = length(x_clean),
-            na_count = na_count,
-            quantiles = quantile(x_clean)
-        )
-    )
 }
+
+
