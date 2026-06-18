@@ -234,7 +234,72 @@ extract_fastq_by_id() {
 
 
 
+split_if_interleaved() {
+    local fq="$1"
+    local outdir="$2"
 
+    # 选择解压命令
+    if [[ "$fq" == *.gz ]]; then
+        reader="zcat"
+    else
+        reader="cat"
+    fi
+
+    # 取样判断
+    local sample
+    sample=$(mktemp)
+
+    $reader "$fq" | head -n 20000 > "$sample"
+
+    # 判断是否 interleaved（基于 read name）
+    if awk '
+    NR%4==1 {
+        name=$1
+        if (name ~ /\/1$/) has1=1
+        if (name ~ /\/2$/) has2=1
+        if (name ~ /\.1$/) hasdot1=1
+        if (name ~ /\.2$/) hasdot2=1
+    }
+    END {
+        if ((has1 && has2) || (hasdot1 && hasdot2))
+            exit 0
+        else
+            exit 1
+    }' "$sample"; then
+
+        echo "Detected interleaved FASTQ"
+
+        # 只判断模式
+        if [ -z "$outdir" ]; then
+            echo "No outdir provided → only detection done"
+            rm -f "$sample"
+            return 0
+        fi
+
+        mkdir -p "$outdir"
+
+        echo "Splitting interleaved FASTQ..."
+
+        $reader "$fq" | awk -v r1="$outdir/R1.fastq" -v r2="$outdir/R2.fastq" '
+        NR%4==1 {h=$0}
+        NR%4==2 {s=$0}
+        NR%4==3 {p=$0}
+        NR%4==0 {
+            if (h ~ /\/1$|\.1$/) {
+                print h"\n"s"\n"p"\n"$0 >> r1
+            } else {
+                print h"\n"s"\n"p"\n"$0 >> r2
+            }
+        }'
+
+        echo "Done: $outdir"
+
+    else
+        echo "Not interleaved FASTQ"
+    fi
+
+    rm -f "$sample"
+}
 
 
 
