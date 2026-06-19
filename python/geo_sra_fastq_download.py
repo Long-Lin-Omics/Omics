@@ -215,18 +215,23 @@ def run_fasterq_dump(run: str, outdir: Path, threads: int) -> List[Path]:
 
 def find_gsm_by_regex(html, pattern):
     regex = re.compile(pattern)
-
     matches = re.findall(
         r'acc=(GSM\d+)[^>]*>.*?</a></td>\s*<td[^>]*>([^<]+)</td>',
         html,
         flags=re.S
     )
+    result = []
+    count = {}
+    for gsm, sample_name in matches:
+        m = regex.search(sample_name)
+        if m:
+            captured = m.group(1)
+            if captured not in count:
+                count[captured]=0
+            count[captured] += 1
+            result.append((gsm, captured + '_rep_' + str(count[captured])))
 
-    return [
-        (gsm, sample_name)
-        for gsm, sample_name in matches
-        if regex.search(sample_name)
-    ]
+    return result
 
 def priority(name, key):
     if re.search(key, name):
@@ -255,6 +260,11 @@ def ena_to_ftp(url_or_path: str) -> str:
 
     return s
 
+def sanitize_sample_name(name):
+    return re.sub(r'[^A-Za-z0-9]+', '_', name).strip('_')
+
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--manifest", required=True, type=Path, help="TSV with columns gse, pattern, label")
@@ -269,8 +279,10 @@ def main() -> int:
 
     all_matches: List[Match] = []
 
+
     # Cache by GSE to avoid repeated downloads.
     geo_cache = {}
+    fastq_cache = {}
 
     for t in targets:
         print('# gse: ' + t.gse + '\tpattern: ' + t.pattern + '\tlabel: ' + t.label + '\tcomparison: ' + t.comparison)
@@ -286,10 +298,10 @@ def main() -> int:
         prior = t.comparison.split('_vs_')[0]
         gsm_list = sorted(gsm_list, key=lambda x: priority(x[1], prior))
         gsm_list = [
-            [item[0], item[1].replace(" ", "_").replace('(','').replace(')','')]
+            [item[0], sanitize_sample_name(item[1])]
             for item in gsm_list
         ]
-        final_outdir = str(args.outdir) + '/' + t.label
+        final_outdir = str(args.outdir) + '/' + t.label + '_' + t.gse
         # print(final_outdir + '\t' + str(len(gsm_list)))
         if not os.path.exists(final_outdir + '/data'):
             os.makedirs(final_outdir + '/data')
@@ -300,32 +312,40 @@ output_dir: "{outdir}"
 
 spike_in: false
 
-cases: """.format(identifier=t.label, outdir=final_outdir))
+cases: """.format(identifier=t.label+'_'+t.gse, outdir=final_outdir))
         for gsm, sample_name in gsm_list:
             # sample_name = sample_name.replace(" ", "_")
             srr = db.gsm_to_srr(gsm).run_accession[0]
-            layout = db.sra_metadata(srr, detailed=True)['library_layout'].iloc[0]
+            srr_meta =  db.sra_metadata(srr, detailed=True)
+            layout = srr_meta['library_layout'].iloc[0]
             print("# gsm: " + gsm + '\tsample_name: ' + sample_name + '\tsrr: ' + srr + '\tlibray_layout: ' + layout)
             if layout == 'SINGLE':
                 fq1 = final_outdir + '/data/' + sample_name + '.fastq.gz'
-                fastq_link = ena_to_ftp(db.sra_metadata(srr,detailed=True)['ena_fastq_ftp_1'].iloc[0])
-                print("wget -c -nv -O {fq} {fq_link}; echo $?".format(fq=fq1,fq_link=fastq_link))
+                if gsm+sample_name not in fastq_cache:
+                    fastq_cache[gsm+sample_name] = fq1
+                    fastq_link = srr_meta['ena_fastq_http'].iloc[0] if pd.notna(srr_meta['ena_fastq_http']).iloc[0] else srr_meta['ena_fastq_http_1'].iloc[0]
+                    print("wget -c -nv -O {fq} {fq_link}; echo $?".format(fq=fq1,fq_link=fastq_link))
+                else:
+                    print("ln -s {old_fq} {new_fq}; echo $?".format(old_fq=fastq_cache[gsm+sample_name], new_fq=fq1))
             else:
                 fq1 = final_outdir + '/data/' + sample_name + '.1.fastq.gz'
                 fq2 = final_outdir + '/data/' + sample_name + '.2.fastq.gz'
-                fastq_link = ena_to_ftp(db.sra_metadata(srr,detailed=True)['ena_fastq_ftp_1'].iloc[0])
-                fastq_link2 = ena_to_ftp(db.sra_metadata(srr,detailed=True)['ena_fastq_ftp_2'].iloc[0])
-                print("wget -c -nv -O {fq} {fq_link}; echo $?".format(fq=fq1,fq_link=fastq_link))
-                print("wget -c -nv -O {fq} {fq_link}; echo $?".format(fq=fq2,fq_link=fastq_link2))
-            
+                if gsm+sample_name not in fastq_cache:
+                    fastq_cache[gsm+sample_name] = [fq1, fq2]
+                    fastq_link = srr_meta['ena_fastq_http_1'].iloc[0]
+                    fastq_link2 = srr_meta['ena_fastq_http_2'].iloc[0]
+                    print("wget -c -nv -O {fq} {fq_link}; echo $?".format(fq=fq1,fq_link=fastq_link))
+                    print("wget -c -nv -O {fq} {fq_link}; echo $?".format(fq=fq2,fq_link=fastq_link2))
+                else:
+                    print("ln -s {old_fq} {new_fq}; echo $?".format(old_fq=fastq_cache[gsm+sample_name][0], new_fq=fq1))
+                    print("ln -s {old_fq} {new_fq}; echo $?".format(old_fq=fastq_cache[gsm+sample_name][1], new_fq=fq1))
 ## for rnaseq.config.yaml
             seq_config.write("""
     {sample}:
         fastq1: "{fq}" """.format(sample=sample_name,fq=fq1))
             if not layout == 'SINGLE':
                 seq_config.write("""
-        fastq2: "{fq}"
-            """.format(fq=fq2))
+        fastq2: "{fq}" """.format(fq=fq2))
         
         seq_config.write("""
 comparisons:

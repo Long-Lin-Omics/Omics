@@ -69,7 +69,7 @@ if [ -n "$cmd_buffer" ]; then
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=$CPUS_PER_TASK
 #SBATCH --time=01:00:00
-#SBATCH --partition=standard
+#SBATCH --partition=highmem
 
 $cmd_buffer
 EOL
