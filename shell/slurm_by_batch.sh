@@ -1,14 +1,15 @@
 #!/bin/bash
 
 # 用法检查
-if [ "$#" -ne 3 ]; then
-    echo "Usage: $0 <script_file> <lines_per_task> <cpus_per_task>"
+if [ "$#" -lt 3 ] || [ "$#" -gt 4 ]; then
+    echo "Usage: $0 <script_file> <lines_per_task> <cpus_per_task> [sleep_seconds]"
     exit 1
 fi
 
 SCRIPT_FILE="$1"
 LINES_PER_TASK="$2"
 CPUS_PER_TASK="$3"
+SLEEP_SECONDS="${4:-0}"
 
 # 前缀
 # SLURM_PREFIX="slurm_job"
@@ -44,12 +45,15 @@ while IFS= read -r line; do
 #SBATCH --error=task_$task_num.err
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=$CPUS_PER_TASK
-#SBATCH --partition=highmem
+#SBATCH --partition=normal
 
 $cmd_buffer
 EOL
 
         sbatch "$SLURM_FILE"
+        if [ "$SLEEP_SECONDS" -gt 0 ]; then
+            sleep "$SLEEP_SECONDS"
+        fi
 
         # 重置
         cmd_buffer=""

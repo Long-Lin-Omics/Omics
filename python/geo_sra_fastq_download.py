@@ -324,7 +324,7 @@ cases: """.format(identifier=t.label+'_'+t.gse, outdir=final_outdir))
                 if gsm+sample_name not in fastq_cache:
                     fastq_cache[gsm+sample_name] = fq1
                     fastq_link = srr_meta['ena_fastq_http'].iloc[0] if pd.notna(srr_meta['ena_fastq_http']).iloc[0] else srr_meta['ena_fastq_http_1'].iloc[0]
-                    print("wget -c -nv -O {fq} {fq_link}; echo $?".format(fq=fq1,fq_link=fastq_link))
+                    print("wget -c -nv -O {fq} {fq_link}; echo $?; gzip -t {fq}".format(fq=fq1,fq_link=fastq_link))
                 else:
                     print("ln -s {old_fq} {new_fq}; echo $?".format(old_fq=fastq_cache[gsm+sample_name], new_fq=fq1))
             else:
@@ -334,8 +334,8 @@ cases: """.format(identifier=t.label+'_'+t.gse, outdir=final_outdir))
                     fastq_cache[gsm+sample_name] = [fq1, fq2]
                     fastq_link = srr_meta['ena_fastq_http_1'].iloc[0]
                     fastq_link2 = srr_meta['ena_fastq_http_2'].iloc[0]
-                    print("wget -c -nv -O {fq} {fq_link}; echo $?".format(fq=fq1,fq_link=fastq_link))
-                    print("wget -c -nv -O {fq} {fq_link}; echo $?".format(fq=fq2,fq_link=fastq_link2))
+                    print("wget -c -nv -O {fq} {fq_link}; echo $?; gzip -t {fq}".format(fq=fq1,fq_link=fastq_link))
+                    print("wget -c -nv -O {fq} {fq_link}; echo $?; gzip -t {fq}".format(fq=fq2,fq_link=fastq_link2))
                 else:
                     print("ln -s {old_fq} {new_fq}; echo $?".format(old_fq=fastq_cache[gsm+sample_name][0], new_fq=fq1))
                     print("ln -s {old_fq} {new_fq}; echo $?".format(old_fq=fastq_cache[gsm+sample_name][1], new_fq=fq2))

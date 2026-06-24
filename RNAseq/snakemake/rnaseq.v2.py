@@ -176,6 +176,7 @@ if PAIRED:
                 --alignMatesGapMax 1000000 \
                 --quantMode TranscriptomeSAM \
                 --outSAMattributes NH HI AS NM MD \
+                --outSAMattrRGline ID:{wildcards.sample} SM:{wildcards.sample} PL:ILLUMINA \
             && {scripts_folder}/RNAseq/softwares/samtools sort -@ 8 -o {output.sortbam} {output.bam} \
             && {scripts_folder}/RNAseq/softwares/samtools index -@ 8 {output.sortbam} \
             && {scripts_folder}/RNAseq/softwares/samtools flagstat -@ 8 {output.sortbam} > {output.flagstat} \
@@ -256,6 +257,7 @@ else:
                 --alignMatesGapMax 1000000 \
                 --quantMode TranscriptomeSAM \
                 --outSAMattributes NH HI AS NM MD \
+                --outSAMattrRGline ID:{wildcards.sample} SM:{wildcards.sample} PL:ILLUMINA \
             && {scripts_folder}/RNAseq/softwares/samtools sort -@ 8 -o {output.sortbam} {output.bam} \
             && {scripts_folder}/RNAseq/softwares/samtools index -@ 8 {output.sortbam} \
             && {scripts_folder}/RNAseq/softwares/samtools flagstat -@ 8 {output.sortbam} > {output.flagstat} \

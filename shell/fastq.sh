@@ -302,7 +302,43 @@ split_if_interleaved() {
 }
 
 
+download_fastq() {
+    url="$1"
+    out="$2"
+    max_retry=5
 
+    # check if the file already exists
+    if [[ -f "$out" ]]; then
+        echo "[INFO] file exists: $out"
+
+        # if gzip -t "$out" 2>/dev/null; then
+        #     echo "[SKIP] valid gzip already exists"
+            return 0
+        # else
+        #     echo "[WARN] existing file is corrupted, will re-download"
+        #     rm -f "$out"
+        # fi
+    fi
+
+    # 2. download + check + retry
+    for i in $(seq 1 $max_retry); do
+        echo "[try $i] downloading $out"
+
+        wget -c -nv -O "$out" "$url"
+
+        if gzip -t "$out" 2>/dev/null; then
+            echo "[OK] $out is valid gzip"
+            return 0
+        else
+            echo "[WARN] corrupted file detected, retrying..."
+            rm -f "$out"
+        fi
+        sleep 5s
+    done
+
+    echo "[FAIL] download failed after $max_retry attempts"
+    return 1
+}
 
 
 
