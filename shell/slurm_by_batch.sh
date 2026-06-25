@@ -46,6 +46,7 @@ while IFS= read -r line; do
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=$CPUS_PER_TASK
 #SBATCH --partition=normal
+#SBATCH --mem=500G
 
 $cmd_buffer
 EOL
@@ -72,8 +73,8 @@ if [ -n "$cmd_buffer" ]; then
 #SBATCH --error=task_$task_num.err
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=$CPUS_PER_TASK
-#SBATCH --time=01:00:00
-#SBATCH --partition=highmem
+#SBATCH --partition=normal
+#SBATCH --mem=500G
 
 $cmd_buffer
 EOL
