@@ -217,7 +217,7 @@ rule gather_barcodes_count:
     output:
         "{output_dir}/trimmed/target.barcodes.table.txt"
     script:
-        "{scripts_folder}/cut_and_run/snakemake/gather_barcodes.py"
+        scripts_folder + "/cut_and_run/snakemake/gather_barcodes.py"
 
 rule plot_barcodes_heatmap:
     input:
@@ -225,7 +225,7 @@ rule plot_barcodes_heatmap:
     output:
         "{output_dir}/trimmed/target.barcodes.heatmap.png"
     script:
-        "{scripts_folder}/cut_and_run/snakemake/plot_barcodes_heatmap.py"
+        scripts_folder + "/cut_and_run/snakemake/plot_barcodes_heatmap.py"
 
 
 rule get_scalefactor:
