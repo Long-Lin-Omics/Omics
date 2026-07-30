@@ -25,7 +25,7 @@ barcodes = {
 
 def find_marker_from_filename(fastq_files):
     for marker in barcodes:
-        if any(marker in f for f in fastq_files):
+        if any(marker.lower() in f.lower() for f in fastq_files):
             return marker
     return 'None'
 
@@ -64,6 +64,8 @@ def main():
     with open(output_file, 'w') as out:
         out.write(sample_name + '\n')
         out.write( "Marker: " + marker +'\n' )
+        if marker == 'None':
+            marker = max(counts, key=counts.get)
         for bc, count in sorted(counts.items()):
             result = count / counts[marker]
             out.write(f"{bc}\t{count}\t{result}\n")
