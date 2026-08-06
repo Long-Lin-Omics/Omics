@@ -52,7 +52,7 @@ plot_quantiles <- function(
     )
 }
 
-plot_hist_with_quantiles <- function(x){
+plot_hist_with_quantiles <- function(x, probs = c(0.25, 0.5, 0.75)){
     na_count <- sum(is.na(x))
     if (na_count > 0) {
         warning(
@@ -97,7 +97,7 @@ plot_hist_with_quantiles <- function(x){
 
 }
 
-plot_density_with_quantiles <- function(x){
+plot_density_with_quantiles <- function(x, probs = c(0.25, 0.5, 0.75)){
     na_count <- sum(is.na(x))
     if (na_count > 0) {
         warning(
