@@ -30,9 +30,9 @@ rule all:
         expand("{output_dir}/peaks/{case}_peaks.narrowPeak.clean.annotated",case=cases,output_dir=output_dir),
         expand("{output_dir}/aligned/{sample}_fragment_lengths.txt",sample=sample_names,output_dir=output_dir),
         expand("{output_dir}/ucsc/{sample}_normalized.bw", sample=sample_names, output_dir=output_dir),
-        expand("{output_dir}/metaplot/normalized/{comparisons}.xlsx",comparisons=comparisons,output_dir=output_dir),
-        expand("{output_dir}/metaplot/unnormalized/{comparisons}.xlsx",comparisons=comparisons,output_dir=output_dir),
-        "{output_dir}/report/stat.tsv".format(output_dir=output_dir)
+        expand("{output_dir}/metaplot/normalized/{identifier}.{comparisons}.xlsx",identifier=identifier,comparisons=comparisons,output_dir=output_dir),
+        expand("{output_dir}/metaplot/unnormalized/{identifier}.{comparisons}.xlsx",identifier=identifier,comparisons=comparisons,output_dir=output_dir),
+        "{output_dir}/report/{identifier}.stat.tsv".format(output_dir=output_dir,identifier=identifier)
 
 #        expand("{output_dir}/ucsc/{sample}_unnormalized.bw", sample=sample_names, output_dir=output_dir),
         # "{output_dir}/diffbind/differential_binding.csv".format(output_dir=output_dir),
