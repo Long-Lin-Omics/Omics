@@ -24,8 +24,8 @@ rule all:
         # expand("{output_dir}/aligned/{sample}.bam", sample=sample_names, output_dir=output_dir),
         # expand("{output_dir}/motif/{case}_homer_results.txt", case=cases, output_dir=output_dir),
         expand("/data/wade/linl7/{identifier}/mm10/trackDb.txt",identifier=identifier),
-        # "{output_dir}/multiqc/multiqc_raw_fastq_report.html".format(output_dir=output_dir),
-        # "{output_dir}/multiqc/multiqc_trimmed_fastq_report.html".format(output_dir=output_dir),
+        "{output_dir}/multiqc/multiqc_raw_fastq_report.html".format(output_dir=output_dir),
+        "{output_dir}/multiqc/multiqc_trimmed_fastq_report.html".format(output_dir=output_dir),
         expand("{output_dir}/peaks/{case}_peaks.narrowPeak",case=cases,output_dir=output_dir),
         expand("{output_dir}/peaks/{case}_peaks.narrowPeak.clean.annotated",case=cases,output_dir=output_dir),
         expand("{output_dir}/aligned/{sample}_fragment_lengths.txt",sample=sample_names,output_dir=output_dir),
@@ -80,7 +80,10 @@ rule cutadapt:
         trimmed_fastq1="{output_dir}/trimmed/{sample}_R1_trimmed.fastq.gz",
         trimmed_fastq2="{output_dir}/trimmed/{sample}_R2_trimmed.fastq.gz"
     shell:
-        "{scripts_folder}/CHIPseq/softwares/cutadapt -q 20 -m 20 -a AGATCGGAAGAGC -A AGATCGGAAGAGC "
+        # illumina
+        # "{scripts_folder}/CHIPseq/softwares/cutadapt -q 20 -m 20 -a AGATCGGAAGAGC -A AGATCGGAAGAGC "
+        # nextera
+        "{scripts_folder}/CHIPseq/softwares/cutadapt -q 20 -m 20 -a CTGTCTCTTATACACATCT -A CTGTCTCTTATACACATCT "
         "-o {output.trimmed_fastq1} -p {output.trimmed_fastq2} {input.fastq1} {input.fastq2}"
 
 ### --- FastQC After Trimming --- ###
