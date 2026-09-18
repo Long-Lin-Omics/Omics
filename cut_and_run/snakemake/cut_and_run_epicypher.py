@@ -315,15 +315,15 @@ rule macs2_with_control:
         " --outdir {output_dir}/peaks/ -n {wildcards.case} "
 
 
-rule macs2_no_control:
-    input:
-        bam = lambda wc: f"{output_dir}/aligned/{wc.case}_dedup.bam"
-    output:
-        "{output_dir}/peaks/{case}_peaks.narrowPeak"
-    shell:
-        "EXTSIZE=$({scripts_folder}/cut_and_run/softwares/samtools stats -@ 8 {input.bam} | grep '^IS' | awk '{{sum+=$2*$3; count+=$3}} END {{print int(sum/count)}}')"
-        " && {scripts_folder}/cut_and_run/softwares/macs2 callpeak -t {input.bam} -f BAMPE -g {config[macs2_genome_size]} --keep-dup all "
-        " --outdir {output_dir}/peaks/ -n {wildcards.case} --pvalue 1e-5 --nomodel --extsize $EXTSIZE"
+# rule macs2_no_control:
+#     input:
+#         bam = lambda wc: f"{output_dir}/aligned/{wc.case}_dedup.bam"
+#     output:
+#         "{output_dir}/peaks/{case}_peaks.narrowPeak"
+#     shell:
+#         "EXTSIZE=$({scripts_folder}/cut_and_run/softwares/samtools stats -@ 8 {input.bam} | grep '^IS' | awk '{{sum+=$2*$3; count+=$3}} END {{print int(sum/count)}}')"
+#         " && {scripts_folder}/cut_and_run/softwares/macs2 callpeak -t {input.bam} -f BAMPE -g {config[macs2_genome_size]} --keep-dup all "
+#         " --outdir {output_dir}/peaks/ -n {wildcards.case} --pvalue 1e-5 --nomodel --extsize $EXTSIZE"
 
 
 
