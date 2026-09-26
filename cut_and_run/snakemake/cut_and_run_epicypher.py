@@ -297,7 +297,7 @@ rule ucsc_bam2bigwig:
 
         {scripts_folder}/cut_and_run/softwares/bamCoverage -b {input.bam} -o {output.unnormalized} --samFlagExclude 1804
 
-        {scripts_folder}/cut_and_run/softwares/bamCoverage -b {input.bam} -o {output.BPMnormalized} --normalizeUsing CPM --samFlagExclude 1804
+        {scripts_folder}/cut_and_run/softwares/bamCoverage -b {input.bam} -o {output.BPMnormalized} --normalizeUsing BPM --samFlagExclude 1804
         
         if [ "{SPIKEIN}" = "True" ]; then
             {scripts_folder}/cut_and_run/softwares/bamCoverage -b {input.bam} -o {output.SpikeINnormalized} --scaleFactor {params.scale_factor} --normalizeUsing None --samFlagExclude 1804
