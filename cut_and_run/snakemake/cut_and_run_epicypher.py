@@ -164,9 +164,9 @@ rule bowtie2:
         # "bowtie2 -p 8 --local --very-sensitive --no-mixed --no-discordant --phred33 -I 10 -X 700 -x {config[bowtie2_index]} -1 {input.trimmed_fastq1} -2 {input.trimmed_fastq2} --rg-id {params.rg_id} --rg LB:{params.rg_lb} --rg PL:{params.rg_pl} --rg PU:{params.rg_pu} --rg SM:{params.rg_sm}"
         "{scripts_folder}/cut_and_run/softwares/bowtie2 -p 8 --end-to-end --very-sensitive --no-mixed --no-discordant --phred33 -I 10 -X 700 -x {config[bowtie2_index]} -1 {input.trimmed_fastq1} -2 {input.trimmed_fastq2} --rg-id {params.rg_id} --rg LB:{params.rg_lb} --rg PL:{params.rg_pl} --rg PU:{params.rg_pu} --rg SM:{params.rg_sm}"
         "| {scripts_folder}/cut_and_run/softwares/samtools view -@ 8 -Sb - | {scripts_folder}/cut_and_run/softwares/samtools sort -@ 8 -o {output.bam}"
-        " && {scripts_folder}/cut_and_run/softwares/samtools view -@ 8 -b -F 4 {output.bam} > {output.mappedBam}"
+        " && {scripts_folder}/cut_and_run/softwares/samtools view -@ 8 -b -q 30 -f 2 -F 780 {output.bam} > {output.mappedBam}"
         " && {scripts_folder}/cut_and_run/softwares/bedtools intersect -v -abam {output.mappedBam} -b {blacklist} > {output.noBlacklistBam}"
-        " && {scripts_folder}/cut_and_run/softwares/java -Xmx90g -jar {scripts_folder}/cut_and_run/softwares/picard.jar MarkDuplicates I={output.noBlacklistBam} O={output.sortbam} M={output.dup_mets} REMOVE_DUPLICATES=false"
+        " && {scripts_folder}/cut_and_run/softwares/java -Xmx90g -jar {scripts_folder}/cut_and_run/softwares/picard.jar MarkDuplicates I={output.noBlacklistBam} O={output.sortbam} M={output.dup_mets} REMOVE_DUPLICATES=true"
         " && {scripts_folder}/cut_and_run/softwares/samtools view -@ 8 -c {output.sortbam} > {output.read_count}"
 
 rule ecoli_bowtie2:
@@ -188,7 +188,7 @@ rule ecoli_bowtie2:
     shell:
         "{scripts_folder}/cut_and_run/softwares/bowtie2 -p 8 --end-to-end --very-sensitive --no-mixed --no-discordant --phred33 -I 10 -X 700 -x {config[ecoli_bowtie2_index]} -1 {input.trimmed_fastq1} -2 {input.trimmed_fastq2} --rg-id {params.rg_id} --rg LB:{params.rg_lb} --rg PL:{params.rg_pl} --rg PU:{params.rg_pu} --rg SM:{params.rg_sm}"
         "| {scripts_folder}/cut_and_run/softwares/samtools view -@ 8 -Sb - | {scripts_folder}/cut_and_run/softwares/samtools sort -@ 8 -o {output.bam}"
-        " && {scripts_folder}/cut_and_run/softwares/samtools view -@ 8 -b -F 4 {output.bam} > {output.mappedBam}"
+        " && {scripts_folder}/cut_and_run/softwares/samtools view -@ 8 -b -q 30 -f 2 -F 780 {output.bam} > {output.mappedBam}"
         " && {scripts_folder}/cut_and_run/softwares/java -Xmx90g -jar {scripts_folder}/cut_and_run/softwares/picard.jar MarkDuplicates I={output.mappedBam} O={output.sortbam} M={output.dup_mets} REMOVE_DUPLICATES=true"
         " && {scripts_folder}/cut_and_run/softwares/samtools view -@ 8 -c {output.sortbam} > {output.read_count}"
 
@@ -311,7 +311,7 @@ rule macs2_with_control:
     output:
         "{output_dir}/peaks/{case}_peaks.narrowPeak"
     shell:
-        "{scripts_folder}/cut_and_run/softwares/macs2 callpeak -t {input.case} -c {input.control} -f BAMPE -g {config[macs2_genome_size]} --keep-dup all"
+        "{scripts_folder}/cut_and_run/softwares/macs2 callpeak -t {input.case} -c {input.control} -f BAMPE -g {config[macs2_genome_size]} "
         " --outdir {output_dir}/peaks/ -n {wildcards.case} "
 
 
@@ -322,7 +322,7 @@ rule macs2_with_control:
 #         "{output_dir}/peaks/{case}_peaks.narrowPeak"
 #     shell:
 #         "EXTSIZE=$({scripts_folder}/cut_and_run/softwares/samtools stats -@ 8 {input.bam} | grep '^IS' | awk '{{sum+=$2*$3; count+=$3}} END {{print int(sum/count)}}')"
-#         " && {scripts_folder}/cut_and_run/softwares/macs2 callpeak -t {input.bam} -f BAMPE -g {config[macs2_genome_size]} --keep-dup all "
+#         " && {scripts_folder}/cut_and_run/softwares/macs2 callpeak -t {input.bam} -f BAMPE -g {config[macs2_genome_size]} "
 #         " --outdir {output_dir}/peaks/ -n {wildcards.case} --pvalue 1e-5 --nomodel --extsize $EXTSIZE"
 
 
@@ -453,9 +453,9 @@ rule ucsc_hub:
 
 rule mataplot:
     input: 
-        peaks=lambda wildcards: expand("{output_dir}/peaks/{case}_peaks.narrowPeak.clean",output_dir=output_dir,case=config["comparisons"][wildcards.comparisons]),
-        bws=lambda wildcards: expand("{output_dir}/ucsc/{case}_spikeIn_normalized.bw",output_dir=output_dir,case=config["comparisons"][wildcards.comparisons]) if SPIKEIN else lambda wildcards: expand("{output_dir}/ucsc/{case}_BPM_normalized.bw",output_dir=output_dir,case=config["comparisons"][wildcards.comparisons]) ,
-        un_bws=lambda wildcards: expand("{output_dir}/ucsc/{case}_unnormalized.bw",output_dir=output_dir,case=config["comparisons"][wildcards.comparisons]) 
+        peaks=lambda wildcards: expand("{output_dir}/peaks/{case}_peaks.narrowPeak.clean",output_dir=output_dir,case=config["comparisons"][wildcards.comparisons]["Ref"]),
+        bws=lambda wildcards: expand("{output_dir}/ucsc/{case}_spikeIn_normalized.bw",output_dir=output_dir,case=config["comparisons"][wildcards.comparisons]["Ref"]+config["comparisons"][wildcards.comparisons]["Exp"]) if SPIKEIN else lambda wildcards: expand("{output_dir}/ucsc/{case}_BPM_normalized.bw",output_dir=output_dir,case=config["comparisons"][wildcards.comparisons]["Ref"]+config["comparisons"][wildcards.comparisons]["Exp"]) ,
+        un_bws=lambda wildcards: expand("{output_dir}/ucsc/{case}_unnormalized.bw",output_dir=output_dir,case=config["comparisons"][wildcards.comparisons]["Ref"]+config["comparisons"][wildcards.comparisons]["Exp"]) 
     output:
         xlsx="{output_dir}/metaplot/normalized/{comparisons}.xlsx",
         merged_bed="{output_dir}/metaplot/normalized/{comparisons}.merged.bed",
