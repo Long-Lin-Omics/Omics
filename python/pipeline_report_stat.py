@@ -133,8 +133,8 @@ def main():
         # Process peaks
         if args.peaks:
             peak_file = find_matching_file(sample, args.peaks)
-            row["Number of Peaks"] = count_peaks(peak_file) if peak_file else "NA"
-            row["Peak Length Quantiles"] = calculate_peak_length_quantiles(peak_file) if peak_file else "NA"
+            row["Number of Peaks"] = count_peaks(peak_file) if peak_file and os.path.getsize(peak_file) > 0 else "NA"
+            row["Peak Length Quantiles"] = calculate_peak_length_quantiles(peak_file) if peak_file and os.path.getsize(peak_file) > 0 else "NA"
         
         data.append(row)
     

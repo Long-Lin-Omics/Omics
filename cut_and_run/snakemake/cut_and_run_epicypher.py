@@ -465,9 +465,10 @@ rule mataplot:
         un_matrix="{output_dir}/metaplot/unnormalized/{comparisons}.matrix.gz",
         un_tsv="{output_dir}/metaplot/unnormalized/{comparisons}.matrix.tsv"
     params:
-        n=lambda wildcards: len(config["comparisons"][wildcards.comparisons])
+        n=lambda wildcards: len(config["comparisons"][wildcards.comparisons]["Ref"]+config["comparisons"][wildcards.comparisons]["Exp"])
     shell:
-        "cat {input.peaks} | sort -k1,1 -k2,2n | bedtools merge -d 100 -i - > {output.merged_bed} && "
+        # "cat {input.peaks} | sort -k1,1 -k2,2n | bedtools merge -d 100 -i - > {output.merged_bed} && "
+        "bedtools intersect -a {input.peaks[0]} -b {input.peaks[1]} > {output.merged_bed} && "
         "{scripts_folder}/cut_and_run/softwares/computeMatrix reference-point -p 8 --referencePoint center -S {input.bws} -R {output.merged_bed} "
         "--beforeRegionStartLength 2000 --afterRegionStartLength 2000 --binSize 40 -o {output.matrix} --outFileNameMatrix {output.tsv} && "
         "python {scripts_folder}/python/metaplot.py {output.tsv} {output.xlsx} {params.n} && "
