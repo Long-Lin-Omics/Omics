@@ -11,8 +11,8 @@ import re
 
 matrix_data = sys.argv[1]
 output_excel = sys.argv[2]
-n_samples = int(sys.argv[3])
-apply_log = len(sys.argv) > 4 and sys.argv[4] == 'log'
+# n_samples = int(sys.argv[3])
+apply_log = len(sys.argv) > 3 and sys.argv[3] == 'log'
 # a=int(sys.argv[4])
 # b=int(sys.argv[5])
 # bin_size=int(sys.argv[6])
@@ -26,6 +26,7 @@ with open( matrix_data, 'r') as file:
     b = int(re.search(r'downstream:(\d+)', lines[1]).group(1))
     a = int(re.search(r'upstream:(\d+)', lines[1]).group(1))*-1
     bin_size = int(re.search(r'bin size:(\d+)', lines[1]).group(1))
+    n_samples = len(lines[2].split('\t'))//((b-a)/bin_size)
 
 
 # Load matrix data
