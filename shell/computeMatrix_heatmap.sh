@@ -223,7 +223,7 @@ else
         plotHeatmap \
             -m "$MATRIX" \
             -out "$HEATMAP" \
-            --colorMap RdBu \
+            --colorMap PuBu \
             --whatToShow 'plot, heatmap and colorbar'
             # 如果你想带曲线：把上一行改成
             # --whatToShow 'heatmap and profile and colorbar'
